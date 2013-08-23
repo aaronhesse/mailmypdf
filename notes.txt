@@ -1,0 +1,29 @@
+v1
+basically the lob form, except that it works
+stripe button to send payment
+support dynamic number of pages - charge based on number of pages
+actually rank in google for some of the search results
+    post to stack overflow
+    hacker news
+    have good text on the front page indicating what the purpose is
+
+have a way for people to easily convert documents to PDF (maybe not necessary for most people)
+
+email to mail gateway
+    email mailthis@mailmypdf.com
+    attach pdf
+    body is address you want to mail to
+    automatically charges your card
+    uses your saved address
+    can reply when there is an error
+
+take list of email addresses
+
+support other document formats besides pdf
+
+support multiple separate pdfs, pngs, etc
+   probably need preview for this
+
+fill out pdf form from email or elsewhere, and then re-email it or send it via mail
+
+send pdf via fax

@@ -1,0 +1,27 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+{% autoescape true %}
+<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel="stylesheet" href="style.css" />
+    <title>MailMyPDF</title>
+</head>
+<body>
+    <div id="content">
+        Your PDF has been mailed.<br/>
+        <br/>
+        From: <br/>
+        {{ srcAddress }}
+        <br/>
+        To: <br/>
+        {{ destAddress }}
+        <br/>
+        Using: <br/>
+        {{ downloadURL }}
+    </div>
+    <div id="footer">
+        &copy; Copyright 2008 by <a href="http://domain.invalid/">me</a>.
+    </div>
+</body>
+</html>
+{% endautoescape %}
