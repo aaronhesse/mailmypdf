@@ -83,7 +83,7 @@ def create_object(name, url, print_type, test=False):
     payload = {
         "name": name,
         "file": url,
-        "setting_id": print_type,
+        "setting": print_type
     }
     return api_call("objects", method="POST", payload=payload, test=test)
 

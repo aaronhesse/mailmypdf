@@ -24,7 +24,7 @@
     <title>MailMyPDF</title>
     
     <script>
-    
+
         //Stripe.setPublishableKey('pk_test_qjYhk6ALhfcFYHVZBu6GIoCY');
     
         Dropzone.options.myAwesomeDropzone = { // The camelized version of the ID of the form element
@@ -115,111 +115,115 @@
     <div id="content" class="container-fluid span8 text-center" style="float: none; margin: 0 auto;">
         <h2>MailMyPDF</h2>
         <form id="myAwesomeDropzone" class="form well dropzone" action="{{ uploadURL }}" method="POST" enctype="multipart/form-data">
-        <div class="row span7" style="float: none; margin: 0 auto;">
-            <div class="row-fluid">
-                <div><h4>To:</h4></div>
+            <div class="row span7" style="float: none; margin: 0 auto;">
                 <div class="row-fluid">
-                    <div class="control-group span12">
-                        <input name="srcName" type="text" class="input-block-level" placeholder="Name">
+                    <div><h4>To:</h4></div>
+                    <div class="row-fluid">
+                        <div class="control-group span12">
+                            <input name="srcName" type="text" class="input-block-level" placeholder="Name">
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="control-group span12">
+                            <input name="srcAddress1" type="text" class="input-block-level" placeholder="Address1">
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="control-group span12">
+                            <input name="srcAddress2" type="text" class="input-block-level span6"  placeholder="Address2">
+                            <input name="srcCity" type="text" class="input-block-level span6"  placeholder="City" style="float: right">
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                      <form class="form-inline span12">
+                        <select name="srcState" class="input-medium bfh-states span4" data-country="US" data-state="CA"></select>
+                        <select name="srcCountry" class="input-medium bfh-countries span4" data-country="US"></select>
+                        <input name="srcZip" type="text" class="input-block-level span4" placeholder="Zip" style="float: right">
+                      <form>
                     </div>
                 </div>
                 <div class="row-fluid">
-                    <div class="control-group span12">
-                        <input name="srcAddress1" type="text" class="input-block-level" placeholder="Address1">
+                    <div><h4>From:</h4></div>
+                    <div class="row-fluid">
+                        <div class="control-group span12">
+                            <input name="destName" type="text" class="input-block-level" placeholder="Name">
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="control-group span12">
+                            <input name="destAddress1" type="text" class="input-block-level" placeholder="Address1">
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="control-group span12">
+                            <input name="destAddress2" type="text" class="input-block-level span6" placeholder="Address2">
+                            <input name="destCity" type="text" class="input-block-level span6" placeholder="City" style="float: right">
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                      <form class="form-inline span12">
+                        <select name="destState" class="input-medium bfh-states span4" data-country="US" data-state="CA" style="float: none"></select>
+                        <select name="destCountry" class="input-medium bfh-countries span4" data-country="US" ></select>
+                        <input name="destZip" type="text" class="input-block-level span4" placeholder="Zip" style="float: right">
+                      <form>
                     </div>
                 </div>
-                <div class="row-fluid">
-                    <div class="control-group span12">
-                        <input name="srcAddress2" type="text" class="input-block-level span6"  placeholder="Address2">
-                        <input name="srcCity" type="text" class="input-block-level span6"  placeholder="City" style="float: right">
-                    </div>
-                </div>
-                <div class="row-fluid">
-                  <form class="form-inline span12">
-                    <select name="srcState" class="input-medium bfh-states span4" data-country="US" data-state="CA"></select>
-                    <select name="srcCountry" class="input-medium bfh-countries span4" data-country="US"></select>
-                    <input name="srcZip" type="text" class="input-block-level span4" placeholder="Zip" style="float: right">
-                  <form>
-                </div>
-            </div>
-            <div class="row-fluid">
-                <div><h4>From:</h4></div>
-                <div class="row-fluid">
-                    <div class="control-group span12">
-                        <input name="destName" type="text" class="input-block-level" placeholder="Name">
-                    </div>
-                </div>
-                <div class="row-fluid">
-                    <div class="control-group span12">
-                        <input name="destAddress1" type="text" class="input-block-level" placeholder="Address1">
-                    </div>
-                </div>
-                <div class="row-fluid">
-                    <div class="control-group span12">
-                        <input name="destAddress2" type="text" class="input-block-level span6" placeholder="Address2">
-                        <input name="destCity" type="text" class="input-block-level span6" placeholder="City" style="float: right">
-                    </div>
-                </div>
-                <div class="row-fluid">
-                  <form class="form-inline span12">
-                    <select name="destState" class="input-medium bfh-states span4" data-country="US" data-state="CA" style="float: none"></select>
-                    <select name="destCountry" class="input-medium bfh-countries span4" data-country="US" ></select>
-                    <input name="destZip" type="text" class="input-block-level span4" placeholder="Zip" style="float: right">
-                  <form>
-                </div>
-            </div>
-            
-            <br/>
-            
-            <button name="mailMyPDFButton" type="button" class="btn btn-primary btn-large">MailMyPDF Button</button>
-            <a data-toggle="modal" href="#myModal" class="btn btn-primary btn-large">Mail My PDF</a>
-            
-            <!-- Modal -->
-            <!-- this modal will handle stripe processing, final form submission, and a completion/success notification -->
-            <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 id="myModalLabel">Stripe Payment</h3>
-              </div>
-              <div class="modal-body">
-                <p>The cost to mail your PDF is: $0.00</p>
-              </div>
-                <form action="" method="POST" id="payment-form">
-                  <span class="payment-errors"></span>
-                  
-                  <div class="form-row span5">
-                    <label>
-                      <span>Card Number</span>
-                      <input type="text" size="20" data-stripe="number"/>
-                    </label>
-                  </div>
 
-                  <div class="form-row span5">
-                    <label>
-                      <span>CVC</span>
-                      <input type="text" size="4" data-stripe="cvc"/>
-                    </label>
-                  </div>
+                <br/>
 
-                  <div class="form-row span5">
-                    <label>
-                      <span>Expiration (MM/YYYY)</span>
-                      <input type="text" class="span1" size="2" data-stripe="exp-month"/>
-                      <span> / </span>
-                      <input type="text" class="span1" size="2" data-stripe="exp-year"/>
-                    </label>
-                  </div>
+                <!-- <button name="mailMyPDFButton" type="button" class="btn btn-primary btn-large">MailMyPDF Button</button> -->
+                <!-- <a data-toggle="modal" href="#myModal" class="btn btn-primary btn-large">Mail My PDF</a> -->
 
-                    <span class="span5">
-                        <p>&nbsp;</p>
-                        <button type="submit" name="finishStripe" class="btn btn-primary">Submit Payment</button>
-                        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-                        <p>&nbsp;</p>
-                    </span> 
-                </form>
-                
-            </div>
-        <div>
+                <!-- Modal -->
+                <!-- this modal will handle stripe processing, final form submission, and a completion/success notification -->
+                <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h3 id="myModalLabel">Stripe Payment</h3>
+                  </div>
+                  <div class="modal-body">
+                    <p>The cost to mail your PDF is: $0.00</p>
+                  </div>
+                    <form action="" method="POST" id="payment-form">
+                      <span class="payment-errors"></span>
+
+                      <div class="form-row span5">
+                        <label>
+                          <span>Card Number</span>
+                          <input type="text" size="20" data-stripe="number"/>
+                        </label>
+                      </div>
+
+                      <div class="form-row span5">
+                        <label>
+                          <span>CVC</span>
+                          <input type="text" size="4" data-stripe="cvc"/>
+                        </label>
+                      </div>
+
+                      <div class="form-row span5">
+                        <label>
+                          <span>Expiration (MM/YYYY)</span>
+                          <input type="text" class="span1" size="2" data-stripe="exp-month"/>
+                          <span> / </span>
+                          <input type="text" class="span1" size="2" data-stripe="exp-year"/>
+                        </label>
+                      </div>
+
+                        <span class="span5">
+                            <p>&nbsp;</p>
+                            <button type="submit" name="finishStripe" class="btn btn-primary">Submit Payment</button>
+                            <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                            <p>&nbsp;</p>
+                        </span>
+                    </form>
+
+                </div>
+            <div>
+
+          Upload File: <input type="file" name="file"> <br/>
+          <input type="submit" name="submit" value="Submit">
+
         </form>
     </div>
 
