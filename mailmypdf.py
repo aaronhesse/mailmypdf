@@ -14,8 +14,8 @@ COLOR = "101"
 
 JINJA_ENVIRONMENT = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)), extensions=['jinja2.ext.autoescape'])
 
-# When UploadHandler is called, the blobstore should already be storing the file.
 # TODO: Need to figure out how long we wait before we delete the file from the store?
+# When UploadHandler is called, the blobstore should already be storing the file.
 # This uploadHandler should only be called when somebody clicks and drags their PDF
 
 from google.appengine.ext.webapp import blobstore_handlers
@@ -48,21 +48,21 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
         lob.validateAddress(destAddress)
     
         downloadURL = 'http://mailmypdf.appspot.com/file/%s/download' % blob_info.key()
+
+        # Note: Lob will not be able to access this file for processing as it's using localhost for the machine name.
         #downloadURL = 'http://localhost:8080/file/%s/download' % blob_info.key() # for debug/localhost
     
         obj = lob.create_object("uploadedPDF", downloadURL, BLACK_AND_WHITE)
-        logging.warn( obj )
         job = lob.create_job("job", destAddress, srcAddress, obj["id"])
-    
+
+        #BlobInfo info = new BlobInfoFactory().loadBlobInfo(blobKey);
+        logging.error( blob_info )
+
         template_values = {
-            'srcAddress': srcAddress,
+            'srcAddress': destAddress,
             'destAddress': destAddress,
-            'downloadURL': downloadURL
+            'filename': 'asdfasdfasdf'
         }
-    
-        # todo: actually show some UI for getting stripe info?
-        # then modal window for showing thank you!
-        # then redirect user to index page? (with empty form)
     
         template = JINJA_ENVIRONMENT.get_template('templates/mailedTemplate.html')
         self.response.write(template.render(template_values))

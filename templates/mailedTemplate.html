@@ -1,27 +1,40 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
 {% autoescape true %}
+
+3
+
 <html lang="en">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <link rel="stylesheet" href="style.css" />
-    <title>MailMyPDF</title>
-</head>
-<body>
-    <div id="content">
-        Your PDF has been mailed.<br/>
-        <br/>
-        From: <br/>
-        {{ srcAddress }}
-        <br/>
-        To: <br/>
-        {{ destAddress }}
-        <br/>
-        Using: <br/>
-        {{ downloadURL }}
-    </div>
-    <div id="footer">
-        &copy; Copyright 2008 by <a href="http://domain.invalid/">me</a>.
-    </div>
-</body>
+    <head>
+
+        <!-- css -->
+        <link href="static/css/bootstrap-combined.min.css" rel="stylesheet">
+        <link href="static/css/bootstrap-formhelpers.css" rel="stylesheet">
+        <link href="static/css/docs.css" rel="stylesheet">
+        <link rel="stylesheet" href="style.css" />
+
+        <title>MailMyPDF</title>
+    </head>
+    <body>
+        <div id="content" class="container-fluid span8 text-center" style="float: none; margin: 0 auto; background: red">
+            <div class="well" style="background: blue">
+                Your PDF has been mailed.<br/>
+                <br/>
+                From: <br/>
+                {{ srcAddress }}
+                <br/>
+                To: <br/>
+                {{ destAddress }}
+                <br/>
+                Using: <br/>
+                {{ downloadURL }}
+            </div>
+        </div>
+        <div id="footer">
+            &copy; Copyright 2015 by <a href="mailto:aaron@scourcritical.com">Aaron Hesse</a>.
+        </div>
+    </body>
 </html>
+
 {% endautoescape %}
