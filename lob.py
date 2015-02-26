@@ -18,6 +18,8 @@ COLOR = "101"
 PACKAGING_AUTOMATIC = "1"
 PACKAGING_ENVELOPE = "4"
 
+CERTIFIED_MAIL = "2"
+
 Address = collections.namedtuple("Address", "name address_line1 address_line2 address_city address_state address_zip address_country")
 
 
@@ -77,7 +79,9 @@ def verify_address(address):
 def validateAddress(address):
     response = verify_address(address)
     if "errors" in response:
-        raise Exception("Invalid address")
+        return False
+    else:
+        return True
 
 def create_object(name, url, print_type, test=False):
     payload = {
@@ -94,7 +98,7 @@ def create_job(name, to_address, from_address, object_id, test=False):
         "to": to_address._asdict(),
         "from": from_address._asdict(),
         "object1": object_id,
-        "packaging": PACKAGING_ENVELOPE,
+        "service": CERTIFIED_MAIL,
     }
     return api_call("jobs", method="POST", payload=payload, test=test)
 
@@ -127,6 +131,12 @@ def get_object(object_id):
 def get_job(job_id):
     return api_call("jobs/" + job_id)
 
+def validateJob(job_id):
+    response = api_call("jobs/" + job_id)
+    if "errors" in response:
+        return False
+    else:
+        return True
 
 def main():
     address = Address(

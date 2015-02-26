@@ -534,9 +534,9 @@ require.register("dropzone/lib/dropzone.js", function(exports, require, module){
         var _this = this;
         file.previewElement = Dropzone.createElement(this.options.previewTemplate);
         file.previewTemplate = file.previewElement;
-        this.previewsContainer.appendChild(file.previewElement);
-        file.previewElement.querySelector("[data-dz-name]").textContent = file.name;
-        file.previewElement.querySelector("[data-dz-size]").innerHTML = this.filesize(file.size);
+        document.getElementById("dropzoneContent").appendChild(file.previewElement);
+        file.previewElement.querySelector("[data-dz-name]").innerHTML = file.name + " (" + this.filesize(file.size) + ")";
+        document.getElementById("MailMyPDFButton").classList.remove("disabled");
         if (this.options.addRemoveLinks) {
           file._removeLink = Dropzone.createElement("<a class=\"dz-remove\" href=\"javascript:undefined;\">" + this.options.dictRemoveFile + "</a>");
           file._removeLink.addEventListener("click", function(e) {
@@ -575,10 +575,13 @@ require.register("dropzone/lib/dropzone.js", function(exports, require, module){
         thumbnailElement.alt = file.name;
         return thumbnailElement.src = dataUrl;
       },
+      /*
       error: function(file, message) {
         file.previewElement.classList.add("dz-error");
         return file.previewElement.querySelector("[data-dz-errormessage]").textContent = message;
       },
+      */
+      error: noop,
       errormultiple: noop,
       processing: function(file) {
         file.previewElement.classList.add("dz-processing");
@@ -749,6 +752,7 @@ require.register("dropzone/lib/dropzone.js", function(exports, require, module){
           _this.hiddenFileInput = document.createElement("input");
           _this.hiddenFileInput.setAttribute("type", "file");
           _this.hiddenFileInput.setAttribute("multiple", "multiple");
+          _this.hiddenFileInput.setAttribute("id", "hiddenFileInput");
           if (_this.options.acceptedFiles != null) {
             _this.hiddenFileInput.setAttribute("accept", _this.options.acceptedFiles);
           }
@@ -1342,7 +1346,11 @@ require.register("dropzone/lib/dropzone.js", function(exports, require, module){
         if (xhr.readyState !== 4) {
           return;
         }
+        
+        // When the upload is complete, set the className of the jobid span, to the id of the Lob job that was created.
         response = xhr.responseText;
+        document.getElementById("jobid").className = response;
+        
         if (xhr.getResponseHeader("content-type") && ~xhr.getResponseHeader("content-type").indexOf("application/json")) {
           try {
             response = JSON.parse(response);
