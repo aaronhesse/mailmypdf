@@ -24,10 +24,12 @@ handlers:
 - url: /(favicon\.ico|robots\.txt)
   static_files: static/\1
   upload: static/(.*)
-  expiration: '1d'
+  expiration: '1m'
   
 - url: /.*
   script: mailmypdf.application
+  secure: always
+  
 
 libraries:
 - name: webapp2

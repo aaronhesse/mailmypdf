@@ -70,7 +70,8 @@ Dropzone.options.dropzone = {
   parallelUploads: 1,
   maxFiles: 1,
   paramName: "file",
-  clickable: false,
+  clickable: true,
+  acceptedFiles: "application/pdf,application/x-pdf,application/x-bzpdf,application/x-gzpdf,.pdf",
     
   init: function() {
     globalDropzone = this;
@@ -78,14 +79,16 @@ Dropzone.options.dropzone = {
     this.on("addedfile", function(file)
     {
         // todo: if the alert is of class info? or if it's telling the user to drop a file on the form
-        $(".alert").hide();
+        if ($(".alert").hasClass("alert-info")) {
+            $(".alert").hide();
+        }
     });
     
       
     this.on("error", function(file, message)
     {
         console.log('dropzone error message: ' + message);
-        alertError( "Dropzone had an error of some kind." );
+        alertError( message );
     });
   }
 }
@@ -250,5 +253,7 @@ $(function()
         destXhr.send( destAddressData );
     }
     
-    $(document).ready(function(){ alertInfo( "To mail a PDF, first drop a file onto the form." ); });
+    $(document).ready(function(){
+        alertInfo( "To mail a PDF, first drop a file onto the form." );
+    });
 });

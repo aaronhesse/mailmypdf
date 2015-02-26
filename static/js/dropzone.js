@@ -1070,17 +1070,17 @@ require.register("dropzone/lib/dropzone.js", function(exports, require, module){
         total: file.size,
         bytesSent: 0
       };
-      this.files.push(file);
-      file.status = Dropzone.ADDED;
-      this.emit("addedfile", file);
-      if (this.options.createImageThumbnails && file.type.match(/image.*/) && file.size <= this.options.maxThumbnailFilesize * 1024 * 1024) {
-        this.createThumbnail(file);
-      }
       return this.accept(file, function(error) {
         if (error) {
           file.accepted = false;
           return _this._errorProcessing([file], error);
         } else {
+          _this.files.push(file);
+          file.status = Dropzone.ADDED;
+          _this.emit("addedfile", file);
+          if (_this.options.createImageThumbnails && file.type.match(/image.*/) && file.size <= _this.options.maxThumbnailFilesize * 1024 * 1024) {
+            _this.createThumbnail(file);
+          }
           return _this.enqueueFile(file);
         }
       });

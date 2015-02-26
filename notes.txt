@@ -1,7 +1,4 @@
 v1
-basically the lob form, except that it works
-stripe button to send payment
-support dynamic number of pages - charge based on number of pages
 actually rank in google for some of the search results
     post to stack overflow
     hacker news
@@ -9,6 +6,8 @@ actually rank in google for some of the search results
 
 have a way for people to easily convert documents to PDF (maybe not necessary for most people)
 
+
+v2
 email to mail gateway
     email mailthis@mailmypdf.com
     attach pdf
@@ -19,11 +18,6 @@ email to mail gateway
 
 take list of email addresses
 
-support other document formats besides pdf
-
-support multiple separate pdfs, pngs, etc
-   probably need preview for this
-
 fill out pdf form from email or elsewhere, and then re-email it or send it via mail
 
-send pdf via fax
+send pdf via fax ( fax the pdf instead of making a lob mailing api call )
