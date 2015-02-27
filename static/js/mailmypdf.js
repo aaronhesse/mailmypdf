@@ -82,13 +82,27 @@ Dropzone.options.dropzone = {
         if ($(".alert").hasClass("alert-info")) {
             $(".alert").hide();
         }
+        
+        $(".dropzone").css("border-style", "none");
     });
     
-      
+    
     this.on("error", function(file, message)
     {
         console.log('dropzone error message: ' + message);
         alertError( message );
+    });
+    
+    globalDropzone.on("dragover", function() {
+        $(".dropzone").css("border-width", "2px");
+        $(".dropzone").css("border-style", "dashed");
+        $(".dropzone").css("border-color", "#ccc");
+        return false;
+    });
+    
+    globalDropzone.on("dragleave", function() {
+        $(".dropzone").css("border-style", "none");
+        return false;
     });
   }
 }
