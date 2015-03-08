@@ -124,7 +124,7 @@ function cancelStripe()
 
 function submitMailingJobToLob()
 {
-    # Make an xhr request to the python server to create the job
+    //  Make an xhr request to the python server to create the job
 
     var dropzoneFile = file;
     function jobReqListener()
@@ -147,7 +147,7 @@ function submitMailingJobToLob()
         }
     }
     
-    # Do the XHR stuff here.
+    // Do the XHR stuff here.
 }
 
 $(function()
@@ -166,8 +166,6 @@ $(function()
     
     $('#MailMyPDFButton').on('click', function(e) {
         var dropzoneFileCount = globalDropzone.getAcceptedFiles().length;
-        
-        console.log("clicked on mailmypdf button");
         
         if ( dropzoneFileCount > 0 )
             validateAddresses();
