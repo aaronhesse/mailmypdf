@@ -192,14 +192,47 @@ $(function()
     {
         // make job quote request to python backend and get the price for a job using the test api key
         var jobQuote = -1;
-        if (jobQuote > -1)
+        
+        var jobQuoteRequestData = new FormData();
+        jobQuoteRequestData.append('objectid', document.getElementById("objectid").value);
+        jobQuoteRequestData.append('downloadURL', document.getElementById("downloadURL").value);
+        
+        jobQuoteRequestData.append('to_addressName', document.getElementsByName("srcName")[0].value);
+        jobQuoteRequestData.append('to_addressAddr1', document.getElementsByName("srcAddr1")[0].value);
+        jobQuoteRequestData.append('to_addressAddr2', document.getElementsByName("srcAddr2")[0].value);
+        jobQuoteRequestData.append('to_addressCity', document.getElementsByName("srcCity")[0].value);
+        jobQuoteRequestData.append('to_addressState', document.getElementsByName("srcState")[0].value);
+        jobQuoteRequestData.append('to_addressZip', document.getElementsByName("srcZip")[0].value);
+        jobQuoteRequestData.append('to_addressCountry', document.getElementsByName("srcCountry")[0].value);
+        
+        jobQuoteRequestData.append('from_addressName', document.getElementsByName("destName")[0].value);
+        jobQuoteRequestData.append('from_addressAddr1', document.getElementsByName("destAddr1")[0].value);
+        jobQuoteRequestData.append('from_addressAddr2', document.getElementsByName("destAddr2")[0].value);
+        jobQuoteRequestData.append('from_addressCity', document.getElementsByName("destCity")[0].value);
+        jobQuoteRequestData.append('from_addressState', document.getElementsByName("destState")[0].value);
+        jobQuoteRequestData.append('from_addressZip', document.getElementsByName("destZip")[0].value);
+        jobQuoteRequestData.append('from_addressCountry', document.getElementsByName("destCountry")[0].value);
+        
+        function jobQuoteReqListener()
         {
-            return true;
+            var jobQuote = this.responseText;
+            
+            console.log("jobQuoteResponse: " + jobQuote);
+            
+            if (jobQuote > -1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
-        else
-        {
-            return false;
-        }
+        
+        var jobQuoteXhr = new XMLHttpRequest();
+        jobQuoteXhr.onload = jobQuoteReqListener;
+        jobQuoteXhr.open('POST', 'lob/getJobQuote');
+        jobQuoteXhr.send( jobQuoteRequestData );
     }
     
     function activateStripeModal()
