@@ -56,9 +56,12 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
         # 'validate' requests to this python server then it makes the lob calls and returns the outcome.
     
         obj = lob.create_object("uploadedPDF", downloadURL, BLACK_AND_WHITE)
-        job = lob.create_job("job", destAddress, srcAddress, obj["id"])
         
-        self.response.write( job["id"] )
+        # Any arguments passed into the response.write() method, must be inside a python tuple.
+        # the write() method only accepts two arguments (the implicit this pointer, and an argument)
+        # in this case, the argument is a single tuple containing multiple arguments.
+        
+        self.response.write( (obj["id"], downloadURL) )
 
 class LobValidateAddressRequestHandler(webapp2.RequestHandler):
     def post(self):
@@ -72,6 +75,36 @@ class LobValidateAddressRequestHandler(webapp2.RequestHandler):
             self.request.get('Country'),
         )
         self.response.write(lob.validateAddress(address))
+
+class LobGetJobQuoteRequestHandler(webapp2.RequestHandler):
+    def post(self):
+        
+        to_address = lob.Address(
+            self.request.get('to_addressName'),
+            self.request.get('to_addressAddr1'),
+            self.request.get('to_addressAddr2'),
+            self.request.get('to_addressCity'),
+            self.request.get('to_addressState'),
+            self.request.get('to_addressZip'),
+            self.request.get('to_addressCountry'),
+            )
+        
+        from_address = lob.Address(
+            self.request.get('from_addressName'),
+            self.request.get('from_addressAddr1'),
+            self.request.get('from_addressAddr2'),
+            self.request.get('from_addressCity'),
+            self.request.get('from_addressState'),
+            self.request.get('from_addressZip'),
+            self.request.get('from_addressCountry'),
+            )
+        
+        self.response.write(lob.job_quote(
+           self.request.get('url'),
+           to_address,
+           from_address,
+           self.request.get('objectid')
+           ))
 
 class LobCheckJobRequestHandler(webapp2.RequestHandler):
     def post(self):
@@ -111,5 +144,6 @@ application = webapp2.WSGIApplication([
     ('/file/([^/]+)/download', PDFDownloadHandler),
     ('/lob/validate', LobValidateAddressRequestHandler),
     ('/lob/validateJob', LobCheckJobRequestHandler),
+    ('/lob/getJobQuote', LobGetJobQuoteRequestHandler),
     ('/stripe/processPayment', StripeProcessPaymentHandler)
 ], debug=True)

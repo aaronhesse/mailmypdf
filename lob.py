@@ -46,7 +46,7 @@ def api_call(path, payload=None, method='GET', headers=None, deadline=30, test=F
 
     if test:
         # hard-coded test api key used for getting quotes
-        api_key = "test_6b64e2af9a4e42c66d7a9552f122d20abd6"
+        api_key = "test_166c82095487bb7cd46145131e7299225f8"
     else:
         api_key = API_KEY
 
@@ -82,6 +82,7 @@ def validateAddress(address):
         return False
     else:
         return True
+
 
 def create_object(name, url, print_type, test=False):
     payload = {
@@ -131,12 +132,14 @@ def get_object(object_id):
 def get_job(job_id):
     return api_call("jobs/" + job_id)
 
+
 def validateJob(job_id):
     response = api_call("jobs/" + job_id)
     if "errors" in response:
         return False
     else:
         return True
+
 
 def main():
     address = Address(

@@ -1347,9 +1347,17 @@ require.register("dropzone/lib/dropzone.js", function(exports, require, module){
           return;
         }
         
-        // When the upload is complete, set the className of the jobid span, to the id of the Lob job that was created.
+        // When the upload is complete, set the className of the object id and downloadURL
+        // to the corresponding values, used to create the job.
+        
         response = xhr.responseText;
-        document.getElementById("jobid").className = response;
+        
+        var splitStr = response.substring(1,response.length - 1).split(",");
+        var objectID = splitStr[0].replace(/'/g,"");
+        var downloadURL = splitStr[1].substr(1).replace(/'/g,"");
+        
+        document.getElementById("downloadURL").className = downloadURL;
+        document.getElementById("objectid").className = objectID;
         
         if (xhr.getResponseHeader("content-type") && ~xhr.getResponseHeader("content-type").indexOf("application/json")) {
           try {

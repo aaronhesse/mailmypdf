@@ -40,9 +40,16 @@ var handler = StripeCheckout.configure({
         
         function paymentReqListener()
         {
-            // The stripe payment is now complete/successful.
-            alertInfo( "<strong>Submitting PDF file...</strong>" );
-            $( "#dropzone" ).submit();
+            
+            // The stripe payment has completed by the python backend by this point.
+            // If the checkout payment completed successfully, then create the lob job.
+            // Otherwise alert the user that we weren't able to process the Stripe payment.
+            
+            if ( response.Text == true ) {
+                submitMailingJobToLob();
+            }
+            else
+                alertError( "Unable to successfully process the Stripe payment. Try again later." );
         }
         
         var paymentData = new FormData();
@@ -115,6 +122,34 @@ function cancelStripe()
     $("#card-expiry-year").val('');
 }
 
+function submitMailingJobToLob()
+{
+    # Make an xhr request to the python server to create the job
+
+    var dropzoneFile = file;
+    function jobReqListener()
+    {
+        if ( this.responseText == "True" )
+        {
+            // TODO: make the "Send Another" a link that clears the form fields and removes all files from the dropzone.
+            alertSuccess( "Your PDF will be mailed shortly. Send Another?" );
+            $("#jobid").removeClass();
+            globalDropzone.removeFile( dropzoneFile );
+        }
+        else
+        {
+            var localhostWarning;
+            if (document.location.hostname == "localhost")
+                localhostWarning = "<strong>localhost</strong>";
+            
+            alertError( "Unable to create Lob job for some reason. " + localhostWarning );
+            $("#jobid").removeClass(); // is this required here?
+        }
+    }
+    
+    # Do the XHR stuff here.
+}
+
 $(function()
 {
     $( "#dropzone" ).submit(function( event )
@@ -125,39 +160,14 @@ $(function()
       
       globalDropzone.on("complete", function(file)
       {
-            var dropzoneFile = file;
-            function jobReqListener()
-            {
-                if ( this.responseText == "True" )
-                {
-                    // TODO: make the "Send Another" a link that clears the form fields and removes all files from the dropzone.
-                    alertSuccess( "Your PDF will be mailed shortly. Send Another?" );
-                    $("#jobid").removeClass();
-                    globalDropzone.removeFile( dropzoneFile );
-                }
-                else
-                {
-                    var localhostWarning;
-                    if (document.location.hostname == "localhost")
-                        localhostWarning = "<strong>localhost</strong>";
-                    
-                    alertError( "Unable to create Lob job for some reason. " + localhostWarning );
-                    $("#jobid").removeClass(); // is this required here?
-                }
-            }
-            
-            var jobData = new FormData();
-            jobData.append('jobid', document.getElementById("jobid").className);
-            
-            var srcXhr = new XMLHttpRequest();
-            srcXhr.onload = jobReqListener;
-            srcXhr.open('POST', 'lob/validateJob');
-            srcXhr.send( jobData );
+        processPayment();
       });
     });
     
     $('#MailMyPDFButton').on('click', function(e) {
         var dropzoneFileCount = globalDropzone.getAcceptedFiles().length;
+        
+        console.log("clicked on mailmypdf button");
         
         if ( dropzoneFileCount > 0 )
             validateAddresses();
@@ -172,30 +182,26 @@ $(function()
         $(".alert").hide();
     });
     
-    function stripeResponseHandler(status, response)
+    function processPayment()
     {
-        /*
-        console.log('inside the stripe response handler function!');
-        alert('inside stripe response handler function!');
-        
-        var $form = $('#payment-form');
-        
-        if ( response.error )
+        if( getJobQuote() )
+          activateStripeModal();
+        else
+          alertError("Unable to retrieve price for mailing job. Try again later.");
+    }
+    
+    function getJobQuote()
+    {
+        // make job quote request to python backend and get the price for a job using the test api key
+        var jobQuote = -1;
+        if (jobQuote > -1)
         {
-            $form.find('.payment-errors').text(response.error.message);
-            $form.find('button').prop('disabled', false);
+            return true;
         }
         else
         {
-            // response contains id and card, which contains additional card details
-            // Insert the token into the form so it gets submitted to the server (our server)
-            // and submit the stripe payment form to be processed by our python server
-            
-            var token = response.id;
-            $form.append($('<input type="hidden" name="stripeToken" />').val(token));
-            $form.get(0).submit();
+            return false;
         }
-        */
     }
     
     function activateStripeModal()
@@ -248,8 +254,9 @@ $(function()
                 return;
             }
             
-            // TODO: find some way to decouple this from the address validation code.
-            activateStripeModal();
+            alertInfo( "<strong>Submitting PDF file...</strong>" );
+            $( "#dropzone" ).submit();
+            
         }
         
         var destAddressData = new FormData();
