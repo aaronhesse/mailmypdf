@@ -45,7 +45,9 @@ var handler = StripeCheckout.configure({
             // If the checkout payment completed successfully, then create the lob job.
             // Otherwise alert the user that we weren't able to process the Stripe payment.
             
-            if ( response.Text == true ) {
+            //console.log("this.responseText: %s", this.responseText);
+            
+            if ( this.responseText == "True" ) {
                 submitMailingJobToLob();
             }
             else
@@ -111,6 +113,32 @@ Dropzone.options.dropzone = {
         $(".dropzone").css("border-style", "none");
         return false;
     });
+
+    this.on("success", function(data) {
+        var url = data.xhr.response;
+        
+        // properly retrieve the objectID and its downloadURL from the response on the backend.
+        
+        var array = url.split(',');
+        var objID = array[0];
+        var objDownloadURL = array[1];
+        
+        objID = objID.substr(3, objID.length - 4);
+        objDownloadURL = objDownloadURL.substr(2, objDownloadURL.length - 4);
+        
+        //console.log( "objectID: %s", objID );
+        //console.log( "downloadURL: %s", objDownloadURL );
+        
+        // then write it into the class names of the spans (objectid and downloadURL)
+        
+        document.getElementById("objectid").className = objID;
+        $("downloadURL").addClass( objDownloadURL ).trigger('wroteClassData');
+        
+        // think about what happens when we don't have the objID or downloadURL...
+        
+       $(document).trigger('wroteClassData');
+        
+    });
   }
 }
 
@@ -152,6 +180,12 @@ function submitMailingJobToLob()
 
 $(function()
 {
+    // After the class names are written into the spans, process the stripe payment.
+    $(document).bind('wroteClassData',function()
+    {
+        processPayment();
+    });
+    
     $( "#dropzone" ).submit(function( event )
     {
       event.preventDefault();
@@ -160,7 +194,7 @@ $(function()
       
       globalDropzone.on("complete", function(file)
       {
-        processPayment();
+        // we used to processPayment here, but now we do that after the classNames for objectID and downloadURL are written into the html.
       });
     });
     
@@ -182,10 +216,7 @@ $(function()
     
     function processPayment()
     {
-        if( getJobQuote() )
-          activateStripeModal();
-        else
-          alertError("Unable to retrieve price for mailing job. Try again later.");
+        getJobQuote();
     }
     
     function getJobQuote()
@@ -194,20 +225,20 @@ $(function()
         var jobQuote = -1;
         
         var jobQuoteRequestData = new FormData();
-        jobQuoteRequestData.append('objectid', document.getElementById("objectid").value);
-        jobQuoteRequestData.append('downloadURL', document.getElementById("downloadURL").value);
+        jobQuoteRequestData.append('objectid', document.getElementById("objectid").className);
+        jobQuoteRequestData.append('downloadURL', document.getElementById("downloadURL").className);
         
         jobQuoteRequestData.append('to_addressName', document.getElementsByName("srcName")[0].value);
-        jobQuoteRequestData.append('to_addressAddr1', document.getElementsByName("srcAddr1")[0].value);
-        jobQuoteRequestData.append('to_addressAddr2', document.getElementsByName("srcAddr2")[0].value);
+        jobQuoteRequestData.append('to_addressAddr1', document.getElementsByName("srcAddress1")[0].value);
+        jobQuoteRequestData.append('to_addressAddr2', document.getElementsByName("srcAddress2")[0].value);
         jobQuoteRequestData.append('to_addressCity', document.getElementsByName("srcCity")[0].value);
         jobQuoteRequestData.append('to_addressState', document.getElementsByName("srcState")[0].value);
         jobQuoteRequestData.append('to_addressZip', document.getElementsByName("srcZip")[0].value);
         jobQuoteRequestData.append('to_addressCountry', document.getElementsByName("srcCountry")[0].value);
         
         jobQuoteRequestData.append('from_addressName', document.getElementsByName("destName")[0].value);
-        jobQuoteRequestData.append('from_addressAddr1', document.getElementsByName("destAddr1")[0].value);
-        jobQuoteRequestData.append('from_addressAddr2', document.getElementsByName("destAddr2")[0].value);
+        jobQuoteRequestData.append('from_addressAddr1', document.getElementsByName("destAddress1")[0].value);
+        jobQuoteRequestData.append('from_addressAddr2', document.getElementsByName("destAddress2")[0].value);
         jobQuoteRequestData.append('from_addressCity', document.getElementsByName("destCity")[0].value);
         jobQuoteRequestData.append('from_addressState', document.getElementsByName("destState")[0].value);
         jobQuoteRequestData.append('from_addressZip', document.getElementsByName("destZip")[0].value);
@@ -217,15 +248,16 @@ $(function()
         {
             var jobQuote = this.responseText;
             
-            console.log("jobQuoteResponse: " + jobQuote);
+            //console.log("jobQuoteResponseUnparsed: " + jobQuote);
+            //console.log("jobQuoteResponse: " + parseFloat(jobQuote));
             
-            if (jobQuote > -1)
+            if (parseFloat(jobQuote) > -1)
             {
-                return true;
+                activateStripeModal();
             }
             else
             {
-                return false;
+                alertError("Unable to retrieve price for mailing job. Try again later.");
             }
         }
         
@@ -307,5 +339,18 @@ $(function()
     
     $(document).ready(function(){
         alertInfo( "To mail a PDF, first drop a file onto the form." );
+        /*
+        document.getElementsByName("srcName")[0].value = "aaron hesse";
+        document.getElementsByName("srcAddress1")[0].value = "4004 houston court";
+        document.getElementsByName("srcCity")[0].value = "Concord";
+        document.getElementsByName("srcState")[0].value =  "CA";
+        document.getElementsByName("srcZip")[0].value = "94521";
+        
+        document.getElementsByName("destName")[0].value = "aaron hesse";
+        document.getElementsByName("destAddress1")[0].value = "4004 houston court";
+        document.getElementsByName("destCity")[0].value = "Concord";
+        document.getElementsByName("destState")[0].value = "CA";
+        document.getElementsByName("destZip")[0].value = "94521";
+        */
     });
 });

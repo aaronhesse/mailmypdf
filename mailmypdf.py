@@ -100,7 +100,7 @@ class LobGetJobQuoteRequestHandler(webapp2.RequestHandler):
             )
         
         self.response.write(lob.job_quote(
-           self.request.get('url'),
+           self.request.get('downloadURL'),
            to_address,
            from_address,
            self.request.get('objectid')
@@ -119,7 +119,8 @@ class StripeProcessPaymentHandler(webapp2.RequestHandler):
                 source=self.request.get('tokenid'),
                 description=self.request.get('description')
             )
-            self.response.write(charge)
+            #self.response.write(charge)
+            self.response.write("True")
         except stripe.CardError, e:
             self.response.write("The card has been declined")
             pass

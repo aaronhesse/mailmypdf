@@ -1347,8 +1347,8 @@ require.register("dropzone/lib/dropzone.js", function(exports, require, module){
           return;
         }
         
-        // When the upload is complete, set the className of the object id and downloadURL
-        // to the corresponding values, used to create the job.
+        // When the upload is complete, set the className of the jobid span, to the id of the Lob job that was created.
+        // Also update the objectid span and downloadURL span.
         
         response = xhr.responseText;
         

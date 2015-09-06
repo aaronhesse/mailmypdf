@@ -115,10 +115,17 @@ def job_quote(url, to_address, from_address, object_id):
     The next most reasonable way might be to encode their pricing structure in
     code and just calculate it locally.
     """
+    
+    logging.info("original object ID: %s", object_id);
+    logging.info("passed in url: %s", url);
+    
     original_obj = get_object(object_id)
     # re-create the object in test mode
     name = "mirror:{}:{}".format(object_id, generate_random_string(8))
-    test_obj = create_object(name, url, original_obj["setting"]["id"], test=True)
+    
+    logging.info("original object: %s", original_obj);
+    
+    test_obj = create_object(name, url, original_obj["setting"]["id"], test=True) # this might need a file argument? , 'file': ''}
     # create a job for the object
     test_job = create_job(name, to_address, from_address, test_obj["id"], test=True)
     # get the price of the job
