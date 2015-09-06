@@ -132,7 +132,7 @@ Dropzone.options.dropzone = {
         // then write it into the class names of the spans (objectid and downloadURL)
         
         document.getElementById("objectid").className = objID;
-        $("downloadURL").addClass( objDownloadURL ).trigger('wroteClassData');
+        document.getElementById("downloadURL").className = objDownloadURL;
         
         // think about what happens when we don't have the objID or downloadURL...
         
@@ -153,7 +153,7 @@ function cancelStripe()
 function submitMailingJobToLob()
 {
     //  Make an xhr request to the python server to create the job
-
+/*
     var dropzoneFile = file;
     function jobReqListener()
     {
@@ -174,8 +174,38 @@ function submitMailingJobToLob()
             $("#jobid").removeClass(); // is this required here?
         }
     }
-    
+*/   
     // Do the XHR stuff here.
+    
+    var jobCreateData = new FormData();
+    jobCreateData.append('name', 'testPDF_Description');
+    jobCreateData.append('object_id', document.getElementById("objectid").className);    
+    
+    jobCreateData.append('to_addressName', document.getElementsByName("srcName")[0].value);
+    jobCreateData.append('to_addressAddr1', document.getElementsByName("srcAddress1")[0].value);
+    jobCreateData.append('to_addressAddr2', document.getElementsByName("srcAddress2")[0].value);
+    jobCreateData.append('to_addressCity', document.getElementsByName("srcCity")[0].value);
+    jobCreateData.append('to_addressState', document.getElementsByName("srcState")[0].value);
+    jobCreateData.append('to_addressZip', document.getElementsByName("srcZip")[0].value);
+    jobCreateData.append('to_addressCountry', document.getElementsByName("srcCountry")[0].value);
+    
+    jobCreateData.append('from_addressName', document.getElementsByName("destName")[0].value);
+    jobCreateData.append('from_addressAddr1', document.getElementsByName("destAddress1")[0].value);
+    jobCreateData.append('from_addressAddr2', document.getElementsByName("destAddress2")[0].value);
+    jobCreateData.append('from_addressCity', document.getElementsByName("destCity")[0].value);
+    jobCreateData.append('from_addressState', document.getElementsByName("destState")[0].value);
+    jobCreateData.append('from_addressZip', document.getElementsByName("destZip")[0].value);
+    jobCreateData.append('from_addressCountry', document.getElementsByName("destCountry")[0].value);    
+    
+    var jobCreateXhr = new XMLHttpRequest();
+    jobCreateXhr.onload = jobCreateReqListener;
+    jobCreateXhr.open('POST', 'lob/createJob');
+    jobCreateXhr.send( jobCreateData );
+    
+    function jobCreateReqListener()
+    {
+        //console.log("jobCreateReqListener responseText: %s", this.responseText);
+    }
 }
 
 $(function()
@@ -339,7 +369,7 @@ $(function()
     
     $(document).ready(function(){
         alertInfo( "To mail a PDF, first drop a file onto the form." );
-        /*
+        
         document.getElementsByName("srcName")[0].value = "aaron hesse";
         document.getElementsByName("srcAddress1")[0].value = "4004 houston court";
         document.getElementsByName("srcCity")[0].value = "Concord";
@@ -351,6 +381,5 @@ $(function()
         document.getElementsByName("destCity")[0].value = "Concord";
         document.getElementsByName("destState")[0].value = "CA";
         document.getElementsByName("destZip")[0].value = "94521";
-        */
     });
 });

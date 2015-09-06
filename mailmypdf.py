@@ -106,6 +106,35 @@ class LobGetJobQuoteRequestHandler(webapp2.RequestHandler):
            self.request.get('objectid')
            ))
 
+class LobCreateJobRequestHandler(webapp2.RequestHandler):
+    def post(self):
+        to_address = lob.Address(
+            self.request.get('to_addressName'),
+            self.request.get('to_addressAddr1'),
+            self.request.get('to_addressAddr2'),
+            self.request.get('to_addressCity'),
+            self.request.get('to_addressState'),
+            self.request.get('to_addressZip'),
+            self.request.get('to_addressCountry'),
+            )
+        
+        from_address = lob.Address(
+            self.request.get('from_addressName'),
+            self.request.get('from_addressAddr1'),
+            self.request.get('from_addressAddr2'),
+            self.request.get('from_addressCity'),
+            self.request.get('from_addressState'),
+            self.request.get('from_addressZip'),
+            self.request.get('from_addressCountry'),
+            )        
+        
+        self.response.write(lob.create_job(
+            self.request.get('name'),
+            to_address,
+            from_address,
+            self.request.get('object_id')
+        ))
+
 class LobCheckJobRequestHandler(webapp2.RequestHandler):
     def post(self):
         self.response.write(lob.validateJob(self.request.get('jobid')))
@@ -146,5 +175,6 @@ application = webapp2.WSGIApplication([
     ('/lob/validate', LobValidateAddressRequestHandler),
     ('/lob/validateJob', LobCheckJobRequestHandler),
     ('/lob/getJobQuote', LobGetJobQuoteRequestHandler),
+    ('/lob/createJob', LobCreateJobRequestHandler),
     ('/stripe/processPayment', StripeProcessPaymentHandler)
 ], debug=True)
