@@ -205,6 +205,27 @@ function submitMailingJobToLob()
     function jobCreateReqListener()
     {
         //console.log("jobCreateReqListener responseText: %s", this.responseText);
+        
+        if ( this.responseText == "True" )
+        {
+            // TODO: make the "Send Another" a link that clears the form fields and removes all files from the dropzone.
+            alertSuccess( "Your PDF will be mailed shortly. Send Another?" );
+            $("#jobid").removeClass();
+            $("#downloadURL").removeClass();
+            $("#objectid").removeClass();
+            globalDropzone.removeAllFiles();
+        }
+        else
+        {
+            var localhostWarning;
+            if (document.location.hostname == "localhost")
+                localhostWarning = "<strong>localhost</strong>";
+            
+            alertError( "Unable to create Lob job for some reason. " + localhostWarning );
+            $("#jobid").removeClass(); // is this required here?
+        }
+        
+        //$('#MailMyPDFButton').enable();
     }
 }
 
@@ -232,7 +253,10 @@ $(function()
         var dropzoneFileCount = globalDropzone.getAcceptedFiles().length;
         
         if ( dropzoneFileCount > 0 )
+        {
+            //$('#MailMyPDFButton').disable();
             validateAddresses();
+        }
         else
             alertError("Please attach a file first.");
         

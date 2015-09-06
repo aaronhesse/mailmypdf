@@ -29,9 +29,9 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
     def post(self):
         upload_files = self.get_uploads('file')
         blob_info = upload_files[0]
-
+        
         downloadURL = 'http://mailmypdf.appspot.com/file/%s/download' % blob_info.key()
-
+        
         srcAddress = lob.Address(
             self.request.get('srcName'),
             self.request.get('srcAddress1'),
@@ -41,7 +41,7 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
             self.request.get('srcZip'),
             self.request.get('srcCountry'),
         )
-
+        
         destAddress = lob.Address(
             self.request.get('destName'),
             self.request.get('destAddress1'),
@@ -51,10 +51,10 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
             self.request.get('destZip'),
             self.request.get('destCountry'),
         )
-
+        
         # Addresses are validated elsewhere (prior to this point). Specifically, the client-side javascript makes
         # 'validate' requests to this python server then it makes the lob calls and returns the outcome.
-    
+        
         obj = lob.create_object("uploadedPDF", downloadURL, BLACK_AND_WHITE)
         
         # Any arguments passed into the response.write() method, must be inside a python tuple.
@@ -128,12 +128,15 @@ class LobCreateJobRequestHandler(webapp2.RequestHandler):
             self.request.get('from_addressCountry'),
             )        
         
-        self.response.write(lob.create_job(
+        job = lob.create_job(
             self.request.get('name'),
             to_address,
             from_address,
             self.request.get('object_id')
-        ))
+        )
+        
+        self.response.write( lob.validateJob( job["id"] ) )
+        #self.response.write( job["id"] )
 
 class LobCheckJobRequestHandler(webapp2.RequestHandler):
     def post(self):
