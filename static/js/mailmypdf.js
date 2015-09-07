@@ -28,44 +28,6 @@ function alertSuccess( messageString )
     $(".alert").show();
 }
 
-var handler = StripeCheckout.configure({
-    key: 'pk_test_qjYhk6ALhfcFYHVZBu6GIoCY', // Publishable Stripe API key.
-    image: 'static/adobe.png',
-    name: 'MailMyPDF',
-    description: 'Physically mailing a PDF file',
-    amount: 159,
-    token: function(token)
-    {
-        // The checkout payment form has been submitted.
-        
-        function paymentReqListener()
-        {
-            
-            // The stripe payment has completed by the python backend by this point.
-            // If the checkout payment completed successfully, then create the lob job.
-            // Otherwise alert the user that we weren't able to process the Stripe payment.
-            
-            //console.log("this.responseText: %s", this.responseText);
-            
-            if ( this.responseText == "True" ) {
-                submitMailingJobToLob();
-            }
-            else
-                alertError( "Unable to successfully process the Stripe payment. Try again later." );
-        }
-        
-        var paymentData = new FormData();
-        paymentData.append('tokenid', token.id);
-        paymentData.append('amount', 159);
-        paymentData.append('description', "payinguser@example.com");
-        
-        var paymentXhr = new XMLHttpRequest();
-        paymentXhr.onload = paymentReqListener;
-        paymentXhr.open('POST', 'stripe/processPayment');
-        paymentXhr.send( paymentData );
-    }
-});
-
 $(window).on('popstate', function(){
     closeStripeModal();
 });
@@ -225,7 +187,7 @@ function submitMailingJobToLob()
             $("#jobid").removeClass(); // is this required here?
         }
         
-        //$('#MailMyPDFButton').enable();
+        //$('#MailMyPDFButton').removeClass("disabled");
     }
 }
 
@@ -254,7 +216,7 @@ $(function()
         
         if ( dropzoneFileCount > 0 )
         {
-            //$('#MailMyPDFButton').disable();
+            //$('#MailMyPDFButton').addClass("disabled");
             validateAddresses();
         }
         else
@@ -305,9 +267,13 @@ $(function()
             //console.log("jobQuoteResponseUnparsed: " + jobQuote);
             //console.log("jobQuoteResponse: " + parseFloat(jobQuote));
             
-            if (parseFloat(jobQuote) > -1)
+            var jobPrice = parseFloat(jobQuote);
+            
+            console.log("jobPrice: %s", jobPrice);
+            
+            if ( jobPrice > -1 )
             {
-                activateStripeModal();
+                activateStripeModal( jobPrice );
             }
             else
             {
@@ -321,9 +287,48 @@ $(function()
         jobQuoteXhr.send( jobQuoteRequestData );
     }
     
-    function activateStripeModal()
+    function activateStripeModal( jobPrice )
     {
         $(".alert").hide();
+        
+        var handler = StripeCheckout.configure({
+            key: 'pk_test_qjYhk6ALhfcFYHVZBu6GIoCY', // Publishable Stripe API key.
+            image: 'static/adobe.png',
+            name: 'MailMyPDF',
+            description: 'Physically mailing a PDF file',
+            amount: jobPrice * 100,
+            token: function(token)
+            {
+                // The checkout payment form has been submitted.
+                
+                function paymentReqListener()
+                {
+                    
+                    // The stripe payment has completed by the python backend by this point.
+                    // If the checkout payment completed successfully, then create the lob job.
+                    // Otherwise alert the user that we weren't able to process the Stripe payment.
+                    
+                    //console.log("this.responseText: %s", this.responseText);
+                    
+                    if ( this.responseText == "True" ) {
+                        submitMailingJobToLob();
+                    }
+                    else
+                        alertError( "Unable to successfully process the Stripe payment. Try again later." );
+                }
+                
+                var paymentData = new FormData();
+                paymentData.append('tokenid', token.id);
+                paymentData.append('amount', jobPrice * 100);
+                paymentData.append('description', "payinguser@example.com");
+                
+                var paymentXhr = new XMLHttpRequest();
+                paymentXhr.onload = paymentReqListener;
+                paymentXhr.open('POST', 'stripe/processPayment');
+                paymentXhr.send( paymentData );
+            }
+        });        
+        
         handler.open();
     }
     
