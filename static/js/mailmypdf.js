@@ -372,7 +372,7 @@ $(function()
     
     $(document).ready(function(){
         alertInfo( "To mail a PDF, first drop a file onto the form." );
-        
+        /*
         document.getElementsByName("srcName")[0].value = "aaron hesse";
         document.getElementsByName("srcAddress1")[0].value = "4004 houston court";
         document.getElementsByName("srcCity")[0].value = "Concord";
@@ -384,5 +384,6 @@ $(function()
         document.getElementsByName("destCity")[0].value = "Concord";
         document.getElementsByName("destState")[0].value = "CA";
         document.getElementsByName("destZip")[0].value = "94521";
+        */
     });
 });
