@@ -60,6 +60,7 @@ Dropzone.options.dropzone = {
     
     this.on("error", function(file, message)
     {
+        $(".dropzone").css("border-style", "none");
         console.log('dropzone error message: ' + message);
         alertError( message );
     });
@@ -79,7 +80,7 @@ Dropzone.options.dropzone = {
     this.on("success", function(data) {
         var url = data.xhr.response;
         
-        // properly retrieve the objectID and its downloadURL from the response on the backend.
+        // properly retrieve the objectID and its downloadURL from the response from the backend.
         
         var array = url.split(',');
         var objID = array[0];
@@ -88,18 +89,19 @@ Dropzone.options.dropzone = {
         objID = objID.substr(3, objID.length - 4);
         objDownloadURL = objDownloadURL.substr(2, objDownloadURL.length - 4);
         
-        //console.log( "objectID: %s", objID );
-        //console.log( "downloadURL: %s", objDownloadURL );
+        // console.log( "objectID: %s", objID );
+        // console.log( "downloadURL: %s", objDownloadURL );
         
         // then write it into the class names of the spans (objectid and downloadURL)
-        
-        document.getElementById("objectid").className = objID;
-        document.getElementById("downloadURL").className = objDownloadURL;
-        
         // think about what happens when we don't have the objID or downloadURL...
         
-       $(document).trigger('wroteClassData');
-        
+        if (objID && objDownloadURL)
+        {
+            document.getElementById("objectid").className = objID;
+            document.getElementById("downloadURL").className = objDownloadURL;
+            
+            $(document).trigger('wroteClassData');
+        }
     });
   }
 }
@@ -114,30 +116,7 @@ function cancelStripe()
 
 function submitMailingJobToLob()
 {
-    //  Make an xhr request to the python server to create the job
-/*
-    var dropzoneFile = file;
-    function jobReqListener()
-    {
-        if ( this.responseText == "True" )
-        {
-            // TODO: make the "Send Another" a link that clears the form fields and removes all files from the dropzone.
-            alertSuccess( "Your PDF will be mailed shortly. Send Another?" );
-            $("#jobid").removeClass();
-            globalDropzone.removeFile( dropzoneFile );
-        }
-        else
-        {
-            var localhostWarning;
-            if (document.location.hostname == "localhost")
-                localhostWarning = "<strong>localhost</strong>";
-            
-            alertError( "Unable to create Lob job for some reason. " + localhostWarning );
-            $("#jobid").removeClass(); // is this required here?
-        }
-    }
-*/   
-    // Do the XHR stuff here.
+    //  Make an xhr request to the python server to create the job through the Lob API
     
     var jobCreateData = new FormData();
     jobCreateData.append('name', 'testPDF_Description');
@@ -166,13 +145,11 @@ function submitMailingJobToLob()
     
     function jobCreateReqListener()
     {
-        //console.log("jobCreateReqListener responseText: %s", this.responseText);
+        // console.log("jobCreateReqListener responseText: %s", this.responseText);
         
         if ( this.responseText == "True" )
         {
-            // TODO: make the "Send Another" a link that clears the form fields and removes all files from the dropzone.
             alertSuccess( "Your PDF will be mailed shortly. Send Another?" );
-            $("#jobid").removeClass();
             $("#downloadURL").removeClass();
             $("#objectid").removeClass();
             globalDropzone.removeAllFiles();
@@ -184,10 +161,7 @@ function submitMailingJobToLob()
                 localhostWarning = "<strong>localhost</strong>";
             
             alertError( "Unable to create Lob job for some reason. " + localhostWarning );
-            $("#jobid").removeClass(); // is this required here?
         }
-        
-        //$('#MailMyPDFButton').removeClass("disabled");
     }
 }
 
@@ -216,7 +190,7 @@ $(function()
         
         if ( dropzoneFileCount > 0 )
         {
-            //$('#MailMyPDFButton').addClass("disabled");
+            $('#MailMyPDFButton').addClass("disabled");
             validateAddresses();
         }
         else

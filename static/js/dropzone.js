@@ -441,7 +441,7 @@ require.register("dropzone/lib/dropzone.js", function(exports, require, module){
       dictCancelUploadConfirmation: "Are you sure you want to cancel this upload?",
       dictRemoveFile: "Remove file",
       dictRemoveFileConfirmation: null,
-      dictMaxFilesExceeded: "You can only upload {{maxFiles}} files.",
+      dictMaxFilesExceeded: "You can only upload {{maxFiles}} file at a time.",
       accept: function(file, done) {
         return done();
       },
@@ -1352,12 +1352,14 @@ require.register("dropzone/lib/dropzone.js", function(exports, require, module){
         
         response = xhr.responseText;
         
+        /*
         var splitStr = response.substring(1,response.length - 1).split(",");
         var objectID = splitStr[0].replace(/'/g,"");
         var downloadURL = splitStr[1].substr(1).replace(/'/g,"");
         
         document.getElementById("downloadURL").className = downloadURL;
         document.getElementById("objectid").className = objectID;
+        */
         
         if (xhr.getResponseHeader("content-type") && ~xhr.getResponseHeader("content-type").indexOf("application/json")) {
           try {

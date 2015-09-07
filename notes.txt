@@ -2,9 +2,6 @@ v1
 
 TODO:
 
-fix dropzone dashed border sticking around when attempting to drag a 2nd file onto it (it should be set to normal)
- (this occurs when there is already a file attached to the dropzone and you click and drag another one on it prior to submitting the first one)
-
 prevent the site from making more than $10 worth of requests per day
 make sure we're never charging too little (or less than what lob is charging).
 
