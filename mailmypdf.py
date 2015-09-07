@@ -136,7 +136,6 @@ class LobCreateJobRequestHandler(webapp2.RequestHandler):
         )
         
         self.response.write( lob.validateJob( job["id"] ) )
-        #self.response.write( job["id"] )
 
 class LobCheckJobRequestHandler(webapp2.RequestHandler):
     def post(self):
@@ -151,6 +150,9 @@ class StripeProcessPaymentHandler(webapp2.RequestHandler):
                 source=self.request.get('tokenid'),
                 description=self.request.get('description')
             )
+            # can we somehow only return true if creating the charge was successful?
+            # maybe we already go to the except clause if there's an error, so therefore, if we're still
+            # in this block of code, we must have succeeded? so return "True"? maybe double check stripe docs to make sure
             #self.response.write(charge)
             self.response.write("True")
         except stripe.CardError, e:

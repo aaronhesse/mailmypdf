@@ -98,8 +98,8 @@ def create_job(name, to_address, from_address, object_id, test=False):
         "name": name,
         "to": to_address._asdict(),
         "from": from_address._asdict(),
-        "object1": object_id,
-        "service": CERTIFIED_MAIL,
+        "object1": object_id
+        #,"service": CERTIFIED_MAIL,
     }
     return api_call("jobs", method="POST", payload=payload, test=test)
 
