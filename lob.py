@@ -8,7 +8,8 @@ import pprint
 from google.appengine.api import urlfetch
 from webapp2_extras.security import generate_random_string
 
-API_KEY = "test_166c82095487bb7cd46145131e7299225f8"  # replace with live key in production
+API_KEY = "test_166c82095487bb7cd46145131e7299225f8"  # Lob.com API Test Key
+#API_KEY = "live_ad185aa5940c4d83ce1bacb77753b144d49"  # Lob.com API Live Key
 
 BASE_URL = "https://api.lob.com/v1/"
 

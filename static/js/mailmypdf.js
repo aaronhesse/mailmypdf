@@ -89,18 +89,18 @@ Dropzone.options.dropzone = {
         objID = objID.substr(3, objID.length - 4);
         objDownloadURL = objDownloadURL.substr(2, objDownloadURL.length - 4);
         
-        // console.log( "objectID: %s", objID );
-        // console.log( "downloadURL: %s", objDownloadURL );
+        //console.log( "objectID: %s", objID );
+        //console.log( "downloadURL: %s", objDownloadURL );
         
         // then write it into the class names of the spans (objectid and downloadURL)
         // think about what happens when we don't have the objID or downloadURL...
         
         if (objID && objDownloadURL)
         {
-            document.getElementById("objectid").className = objID;
-            document.getElementById("downloadURL").className = objDownloadURL;
-            
-            $(document).trigger('wroteClassData');
+        document.getElementById("objectid").className = objID;
+        document.getElementById("downloadURL").className = objDownloadURL;
+        
+       $(document).trigger('wroteClassData');
         }
     });
   }
@@ -145,7 +145,7 @@ function submitMailingJobToLob()
     
     function jobCreateReqListener()
     {
-        // console.log("jobCreateReqListener responseText: %s", this.responseText);
+        //console.log("jobCreateReqListener responseText: %s", this.responseText);
         
         if ( this.responseText == "True" )
         {
@@ -265,12 +265,16 @@ $(function()
     {
         $(".alert").hide();
         
+        // Convert the jobPrice from dollars into cents, then add 5 cents so we actually make money.
+        jobPrice = (jobPrice * 100) + 5;
+        
         var handler = StripeCheckout.configure({
             key: 'pk_test_qjYhk6ALhfcFYHVZBu6GIoCY', // Publishable Stripe API key.
+            //key: 'pk_live_4b2UkcADEzszXLbdokQBeOPZ',
             image: 'static/adobe.png',
             name: 'MailMyPDF',
             description: 'Physically mailing a PDF file',
-            amount: jobPrice * 100,
+            amount: jobPrice,
             token: function(token)
             {
                 // The checkout payment form has been submitted.
@@ -293,7 +297,7 @@ $(function()
                 
                 var paymentData = new FormData();
                 paymentData.append('tokenid', token.id);
-                paymentData.append('amount', jobPrice * 100);
+                paymentData.append('amount', jobPrice);
                 paymentData.append('description', "payinguser@example.com");
                 
                 var paymentXhr = new XMLHttpRequest();
