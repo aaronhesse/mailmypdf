@@ -79,7 +79,6 @@ class LobValidateAddressRequestHandler(webapp2.RequestHandler):
 
 class LobGetJobQuoteRequestHandler(webapp2.RequestHandler):
     def post(self):
-        
         to_address = lob.Address(
             self.request.get('to_addressName'),
             self.request.get('to_addressAddr1'),
@@ -101,12 +100,12 @@ class LobGetJobQuoteRequestHandler(webapp2.RequestHandler):
             )
         
         self.response.write(lob.job_quote(
-           self.request.get('downloadURL'),
-           to_address,
-           from_address,
-           self.request.get('objectid')
-           ))
-
+            self.request.get('downloadURL'),
+            to_address,
+            from_address,
+            self.request.get('objectid')
+            ))
+        
 class LobCreateJobRequestHandler(webapp2.RequestHandler):
     def post(self):
         to_address = lob.Address(

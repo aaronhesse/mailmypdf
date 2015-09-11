@@ -351,6 +351,7 @@ $(function()
             if ( this.responseText == "False" )
             {
                 alertError( "Destination address is not valid." );
+                //document.getElementsByName("destName")[0].setAttribute('style','border-style: solid; border-color: red;');
                 return;
             }
             

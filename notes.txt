@@ -2,6 +2,20 @@ v1
 
 TODO:
 
+if there is no pdf in the dropzone, the button should open a file selector
+    if there IS a pdf in the dropzone, then it should try to mail the pdf
+
+add ability to remove a pdf file from the dropzone (an x button maybe?)
+send an email reciept once we know lob has recieved the job?
+do we support countries other than united states? if not, remove the country dropdown from both To and From
+    and in that case we can put address1 and 2 on the same line (half and half)
+    and we can put city/state/zip on the same line too (for both to and from)
+
+highlight the form fields that are incorrect in an incorrect case
+    such as making the borders of the fields red when its incorrect so its clear to the user which address is wrong.
+    
+    // style="border-style: solid; border-color: red;
+
 prevent the site from making more than $10 worth of requests per day?
 make sure we're never charging too little (or less than what lob is charging).?
 
@@ -9,6 +23,10 @@ actually rank in google for some of the search results
     post to hacker news & reddit
 
 v2
+
+add ability to do bulk mailing
+    - upload text file of addresses for To, and a single pdf
+    - then make all the correct lob api calls to mail each one.
 
 have a way for people to easily convert documents to PDF (maybe not necessary for most people)
 think about a mobile-centric version of the site, one that's easy to use from an iphone.
