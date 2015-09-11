@@ -97,10 +97,10 @@ Dropzone.options.dropzone = {
         
         if (objID && objDownloadURL)
         {
-        document.getElementById("objectid").className = objID;
-        document.getElementById("downloadURL").className = objDownloadURL;
-        
-       $(document).trigger('wroteClassData');
+            document.getElementById("objectid").className = objID;
+            document.getElementById("downloadURL").className = objDownloadURL;
+            
+            $(document).trigger('wroteClassData');
         }
     });
   }
@@ -190,7 +190,9 @@ $(function()
         
         if ( dropzoneFileCount > 0 )
         {
-            $('#MailMyPDFButton').addClass("disabled");
+            //$('#MailMyPDFButton').addClass("disabled");
+            
+            clearTextFieldBorders();      
             validateAddresses();
         }
         else
@@ -198,6 +200,62 @@ $(function()
         
         e.preventDefault();
     });
+    
+    function clearTextFieldBorders()
+    {
+        clearSourceAddressError();
+        clearDestinationAddressError();
+    }
+    
+    function clearSourceAddressError()
+    {
+        // From fields:
+        $('input[name=srcName]').css("border-style", "");
+        $('input[name=srcName]').css("border-color", "");
+        
+        $('input[name=srcAddress1]').css("border-style", "");
+        $('input[name=srcAddress1]').css("border-color", "");
+        
+        $('input[name=srcAddress2]').css("border-style", "");
+        $('input[name=srcAddress2]').css("border-color", "");
+        
+        $('input[name=srcCity]').css("border-style", "");
+        $('input[name=srcCity]').css("border-color", "");
+        
+        $('select[name=srcState]').css("border-style", "");
+        $('select[name=srcState]').css("border-color", "");
+        
+        $('select[name=srcCountry]').css("border-style", "");
+        $('select[name=srcCountry]').css("border-color", "");
+        
+        $('input[name=srcZip]').css("border-style", "");
+        $('input[name=srcZip]').css("border-color", "");
+    }
+     
+    function clearDestinationAddressError()
+    {
+        // To fields:
+        $('input[name=destName]').css("border-style", "");
+        $('input[name=destName]').css("border-color", "");
+        
+        $('input[name=destAddress1]').css("border-style", "");
+        $('input[name=destAddress1]').css("border-color", "");
+        
+        $('input[name=destAddress2]').css("border-style", "");
+        $('input[name=destAddress2]').css("border-color", "");
+        
+        $('input[name=destCity]').css("border-style", "");
+        $('input[name=destCity]').css("border-color", "");
+        
+        $('select[name=destState]').css("border-style", "");
+        $('select[name=destState]').css("border-color", "");
+        
+        $('select[name=destCountry]').css("border-style", "");
+        $('select[name=destCountry]').css("border-color", "");
+        
+        $('input[name=destZip]').css("border-style", "");
+        $('input[name=destZip]').css("border-color", "");   
+    }
     
     $('.close').click(function()
     {
@@ -316,14 +374,65 @@ $(function()
         validateSourceAddress();
     }
     
+    function setSourceAddressError()
+    {
+        alertError( "Originating address is not valid." );
+        
+        $('input[name=srcName]').css("border-style", "solid");
+        $('input[name=srcName]').css("border-color", "red");
+        
+        $('input[name=srcAddress1]').css("border-style", "solid");
+        $('input[name=srcAddress1]').css("border-color", "red");
+        
+        $('input[name=srcAddress2]').css("border-style", "solid");
+        $('input[name=srcAddress2]').css("border-color", "red");
+        
+        $('input[name=srcCity]').css("border-style", "solid");
+        $('input[name=srcCity]').css("border-color", "red");
+        
+        $('select[name=srcState]').css("border-style", "solid");
+        $('select[name=srcState]').css("border-color", "red");
+        
+        $('select[name=srcCountry]').css("border-style", "solid");
+        $('select[name=srcCountry]').css("border-color", "red");
+        
+        $('input[name=srcZip]').css("border-style", "solid");
+        $('input[name=srcZip]').css("border-color", "red");
+    }
+    
+    function setDestinationAddressError()
+    {
+        alertError( "Destination address is not valid." );
+        
+        $('input[name=destName]').css("border-style", "solid");
+        $('input[name=destName]').css("border-color", "red");
+        
+        $('input[name=destAddress1]').css("border-style", "solid");
+        $('input[name=destAddress1]').css("border-color", "red");
+        
+        $('input[name=destAddress2]').css("border-style", "solid");
+        $('input[name=destAddress2]').css("border-color", "red");
+        
+        $('input[name=destCity]').css("border-style", "solid");
+        $('input[name=destCity]').css("border-color", "red");
+        
+        $('select[name=destState]').css("border-style", "solid");
+        $('select[name=destState]').css("border-color", "red");
+        
+        $('select[name=destCountry]').css("border-style", "solid");
+        $('select[name=destCountry]').css("border-color", "red");
+        
+        $('input[name=destZip]').css("border-style", "solid");
+        $('input[name=destZip]').css("border-color", "red");
+    }
+    
     function validateSourceAddress()
     {
         function srcReqListener()
         {
             if ( this.responseText == "False" )
             {
-                alertError( "Originating address is not valid." );
-                //document.getElementsByName("srcName")[0].setAttribute('style','border-style: solid; border-color: red;');
+                setSourceAddressError();
                 return;
             }
             
@@ -351,8 +460,7 @@ $(function()
         {
             if ( this.responseText == "False" )
             {
-                alertError( "Destination address is not valid." );
-                //document.getElementsByName("destName")[0].setAttribute('style','border-style: solid; border-color: red;');
+                setDestinationAddressError();
                 return;
             }
             
@@ -376,7 +484,8 @@ $(function()
         destXhr.send( destAddressData );
     }
     
-    $(document).ready(function(){
+    $(document).ready(function()
+    {
         alertInfo( "To mail a PDF, first drop a file onto the form." );
         /*
         document.getElementsByName("srcName")[0].value = "aaron hesse";
