@@ -34,18 +34,22 @@ $(window).on('popstate', function(){
 
 var globalDropzone;
 
-Dropzone.options.dropzone = {
+var dropzoneOptions = {
   
   autoProcessQueue: false,
   uploadMultiple: false,
   parallelUploads: 1,
   maxFiles: 1,
   paramName: "file",
-  clickable: true,
   acceptedFiles: "application/pdf,application/x-pdf,application/x-bzpdf,application/x-gzpdf,.pdf",
     
   init: function() {
     globalDropzone = this;
+    
+    this.on("acceptedfile", function(file)
+    {
+        globalDropzone.removeAllFiles();
+    });
     
     this.on("addedfile", function(file)
     {
@@ -487,6 +491,7 @@ $(function()
     $(document).ready(function()
     {
         alertInfo( "To mail a PDF, first drop a file onto the form." );
+        
         /*
         document.getElementsByName("srcName")[0].value = "aaron hesse";
         document.getElementsByName("srcAddress1")[0].value = "4004 houston court";

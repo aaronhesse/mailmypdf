@@ -1050,6 +1050,7 @@ require.register("dropzone/lib/dropzone.js", function(exports, require, module){
     };
 
     Dropzone.prototype.accept = function(file, done) {
+      this.emit("acceptedfile", file);
       if (file.size > this.options.maxFilesize * 1024 * 1024) {
         return done(this.options.dictFileTooBig.replace("{{filesize}}", Math.round(file.size / 1024 / 10.24) / 100).replace("{{maxFilesize}}", this.options.maxFilesize));
       } else if (!Dropzone.isValidFile(file, this.options.acceptedFiles)) {

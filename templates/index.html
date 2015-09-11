@@ -26,8 +26,6 @@
         
         <link href="static/css/bootstrap-combined.min.css" rel="stylesheet">
         <link href="static/css/bootstrap-formhelpers.css" rel="stylesheet">
-            
-        <link href="static/css/mailmypdf.css" rel="stylesheet">
         
         <link rel="shortcut icon" href="static/myicon.ico" />
         
@@ -50,7 +48,7 @@
                 <small style="padding-top: 5px">Physically mail any PDF file.</small>
             </p>
             
-            <form id="dropzone" class="form well dropzone" action="{{ uploadURL }}" method="POST" enctype="multipart/form-data">
+            <form id="dropzone" class="form well" action="{{ uploadURL }}" method="POST" enctype="multipart/form-data">
                 <div id="dropzoneContent" class="row span7" style="float: none; margin: 0 auto;">
                     <div class="row-fluid">
                         <div><h4>To:</h4></div>
@@ -125,6 +123,12 @@
         <span id="downloadURL"></span>
         
         <div style="font-size:11px; text-align: center"><a href="mailto:aaron@scourcritical.com">feedback</a></div>
+        
+        <script>
+            dropzoneOptions.url = "{{ uploadURL }}";
+            dropzoneOptions.clickable = false;
+            globalDropzone = new Dropzone(document.body, dropzoneOptions);
+        </script>
         
     </body>
     
