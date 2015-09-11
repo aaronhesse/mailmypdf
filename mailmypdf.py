@@ -6,6 +6,7 @@ import jinja2
 import webapp2
 import logging
 import sys
+import json
 
 sys.path.insert(0, 'libs')
 
@@ -150,11 +151,18 @@ class StripeProcessPaymentHandler(webapp2.RequestHandler):
                 source=self.request.get('tokenid'),
                 description=self.request.get('description')
             )
+            
             # can we somehow only return true if creating the charge was successful?
             # maybe we already go to the except clause if there's an error, so therefore, if we're still
             # in this block of code, we must have succeeded? so return "True"? maybe double check stripe docs to make sure
-            #self.response.write(charge)
-            self.response.write("True")
+            
+            outputDict = {}
+            outputDict['paid'] = charge.paid
+            outputDict['refundURL'] = str(charge.refunds.url[1:-1])
+            
+            outputJSON = json.dumps(outputDict)
+
+            self.response.write( outputJSON )
         except stripe.CardError, e:
             self.response.write("The card has been declined")
             pass

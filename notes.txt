@@ -10,6 +10,8 @@ send an email reciept once we know lob has recieved the job?
 do we support countries other than united states? if not, remove the country dropdown from both To and From
     and in that case we can put address1 and 2 on the same line (half and half)
     and we can put city/state/zip on the same line too (for both to and from)
+    
+its possible to charge for sending a pdf even though the lob api call could fail
 
 highlight the form fields that are incorrect in an incorrect case
     such as making the borders of the fields red when its incorrect so its clear to the user which address is wrong.

@@ -118,12 +118,14 @@ function cancelStripe()
     $("#card-expiry-year").val('');
 }
 
-function submitMailingJobToLob()
+function submitMailingJobToLob( refundURL )
 {
     //  Make an xhr request to the python server to create the job through the Lob API
     
+    //console.log("refundURL: %s", refundURL);
+    
     var jobCreateData = new FormData();
-    jobCreateData.append('name', 'testPDF_Description');
+    jobCreateData.append('name', 'Uploaded PDF');
     jobCreateData.append('object_id', document.getElementById("objectid").className);    
     
     jobCreateData.append('to_addressName', document.getElementsByName("srcName")[0].value);
@@ -164,7 +166,9 @@ function submitMailingJobToLob()
             if (document.location.hostname == "localhost")
                 localhostWarning = "<strong>localhost</strong>";
             
-            alertError( "Unable to create Lob job for some reason. " + localhostWarning );
+            alertError( "Unable to create Lob job for some reason. A refund will be automatically issued." + localhostWarning );
+            
+            // issue a refund through stripe.
         }
     }
 }
@@ -305,7 +309,7 @@ $(function()
             
             var jobPrice = parseFloat(jobQuote);
             
-            console.log("jobPrice: %s", jobPrice);
+            //console.log("jobPrice: %s", jobPrice);
             
             if ( jobPrice > -1 )
             {
@@ -350,17 +354,31 @@ $(function()
                     
                     //console.log("this.responseText: %s", this.responseText);
                     
-                    if ( this.responseText == "True" ) {
-                        submitMailingJobToLob();
+                    obj = JSON.parse(this.responseText);
+                    
+                    //console.log("paid: %s", obj.paid);
+                    //console.log("refundURL: %s", obj.refundURL);
+                    
+                    if ( obj.paid == true ) {
+                        
+                        //console.log("stripe charge paid = true");
+                        
+                        submitMailingJobToLob( obj.refundURL );
+                        
+                        // if the Lob Job fails, then we need to initiate a stripe refund.
+                        // we need the chargeid or even better the refunds URL
+                        
                     }
                     else
                         alertError( "Unable to successfully process the Stripe payment. Try again later." );
                 }
                 
+                //console.log("tokenid: %s", token.id );
+                
                 var paymentData = new FormData();
                 paymentData.append('tokenid', token.id);
                 paymentData.append('amount', jobPrice);
-                paymentData.append('description', "payinguser@example.com");
+                paymentData.append('description', "Physically Mailing a PDF.");
                 
                 var paymentXhr = new XMLHttpRequest();
                 paymentXhr.onload = paymentReqListener;
