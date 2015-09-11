@@ -323,6 +323,7 @@ $(function()
             if ( this.responseText == "False" )
             {
                 alertError( "Originating address is not valid." );
+                //document.getElementsByName("srcName")[0].setAttribute('style','border-style: solid; border-color: red;');
                 return;
             }
             
