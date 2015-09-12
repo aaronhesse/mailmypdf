@@ -6,17 +6,13 @@ if there is no pdf in the dropzone, the button should open a file selector
     if there IS a pdf in the dropzone, then it should try to mail the pdf
 
 add ability to remove a pdf file from the dropzone (an x button maybe?)
-send an email reciept once we know lob has recieved the job?
+
 do we support countries other than united states? if not, remove the country dropdown from both To and From
     and in that case we can put address1 and 2 on the same line (half and half)
     and we can put city/state/zip on the same line too (for both to and from)
     
 its possible to charge for sending a pdf even though the lob api call could fail
-
-highlight the form fields that are incorrect in an incorrect case
-    such as making the borders of the fields red when its incorrect so its clear to the user which address is wrong.
-    
-    // style="border-style: solid; border-color: red;
+    implement automatic refunds in this case
 
 prevent the site from making more than $10 worth of requests per day?
 make sure we're never charging too little (or less than what lob is charging).?

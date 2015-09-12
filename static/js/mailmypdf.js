@@ -122,8 +122,6 @@ function submitMailingJobToLob( refundURL )
 {
     //  Make an xhr request to the python server to create the job through the Lob API
     
-    //console.log("refundURL: %s", refundURL);
-    
     var jobCreateData = new FormData();
     jobCreateData.append('name', 'Uploaded PDF');
     jobCreateData.append('object_id', document.getElementById("objectid").className);    
@@ -168,7 +166,10 @@ function submitMailingJobToLob( refundURL )
             
             alertError( "Unable to create Lob job for some reason. A refund will be automatically issued." + localhostWarning );
             
-            // issue a refund through stripe.
+            //console.log("refundURL: %s", refundURL);
+            
+            // if the Lob Job fails, then we need to initiate a stripe refund.
+            // we need the chargeid or even better the refunds URL
         }
     }
 }
@@ -204,7 +205,7 @@ $(function()
             validateAddresses();
         }
         else
-            alertError("Please attach a file first.");
+            alertError("Please attach a file first by dropping a file onto the page.");
         
         e.preventDefault();
     });
@@ -347,7 +348,6 @@ $(function()
                 
                 function paymentReqListener()
                 {
-                    
                     // The stripe payment has completed by the python backend by this point.
                     // If the checkout payment completed successfully, then create the lob job.
                     // Otherwise alert the user that we weren't able to process the Stripe payment.
@@ -364,10 +364,6 @@ $(function()
                         //console.log("stripe charge paid = true");
                         
                         submitMailingJobToLob( obj.refundURL );
-                        
-                        // if the Lob Job fails, then we need to initiate a stripe refund.
-                        // we need the chargeid or even better the refunds URL
-                        
                     }
                     else
                         alertError( "Unable to successfully process the Stripe payment. Try again later." );
@@ -508,7 +504,7 @@ $(function()
     
     $(document).ready(function()
     {
-        alertInfo( "To mail a PDF, first drop a file onto the form." );
+        alertInfo( "To mail a PDF, first drop a file onto the page." );
         
         /*
         document.getElementsByName("srcName")[0].value = "aaron hesse";
