@@ -536,7 +536,7 @@ require.register("dropzone/lib/dropzone.js", function(exports, require, module){
         file.previewTemplate = file.previewElement;
         document.getElementById("dropzoneContent").appendChild(file.previewElement);
         file.previewElement.querySelector("[data-dz-name]").innerHTML = file.name + " (" + this.filesize(file.size) + ")";
-        document.getElementById("MailMyPDFButton").classList.remove("disabled");
+        //document.getElementById("MailMyPDFButton").classList.remove("disabled");
         if (this.options.addRemoveLinks) {
           file._removeLink = Dropzone.createElement("<a class=\"dz-remove\" href=\"javascript:undefined;\">" + this.options.dictRemoveFile + "</a>");
           file._removeLink.addEventListener("click", function(e) {

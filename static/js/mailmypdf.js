@@ -49,6 +49,9 @@ var dropzoneOptions = {
     this.on("acceptedfile", function(file)
     {
         globalDropzone.removeAllFiles();
+        //console.log("clickable: %s", globalDropzone.options.clickable);
+        $('#MailMyPDFButtonClickable').css("display", "none");
+        $('#MailMyPDFButton').css("display", "");
     });
     
     this.on("addedfile", function(file)
@@ -154,10 +157,12 @@ function submitMailingJobToLob( refundURL )
         if ( this.responseText == "True" )
         {
             alertSuccess( "Your PDF will be mailed shortly. Send Another?" );
+            
             $("#downloadURL").removeClass();
             $("#objectid").removeClass();
+            //$('#MailMyPDFButton').addClass("disabled");
+            
             globalDropzone.removeAllFiles();
-            $('#MailMyPDFButton').addClass("disabled");
         }
         else
         {
@@ -200,8 +205,6 @@ $(function()
         
         if ( dropzoneFileCount > 0 )
         {
-            //$('#MailMyPDFButton').addClass("disabled");
-            
             clearTextFieldBorders();      
             validateAddresses();
         }
