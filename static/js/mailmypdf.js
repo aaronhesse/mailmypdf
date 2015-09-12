@@ -157,6 +157,7 @@ function submitMailingJobToLob( refundURL )
             $("#downloadURL").removeClass();
             $("#objectid").removeClass();
             globalDropzone.removeAllFiles();
+            $('#MailMyPDFButton').addClass("disabled");
         }
         else
         {
