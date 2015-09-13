@@ -359,16 +359,16 @@ $(function()
                     // If the checkout payment completed successfully, then create the lob job.
                     // Otherwise alert the user that we weren't able to process the Stripe payment.
                     
-                    console.log("this.responseText: %s", this.responseText);
+                    //console.log("this.responseText: %s", this.responseText);
                     
                     obj = JSON.parse(this.responseText);
                     
-                    console.log("paid: %s", obj.paid);
-                    console.log("refundURL: %s", obj.refundURL);
+                    //console.log("paid: %s", obj.paid);
+                   // console.log("refundURL: %s", obj.refundURL);
                     
                     if ( obj.paid == true ) {
                         
-                        console.log("stripe charge paid = true");
+                        //console.log("stripe charge paid = true");
                         
                         submitMailingJobToLob( obj.refundURL );
                     }

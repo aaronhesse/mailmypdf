@@ -2,6 +2,8 @@ v1
 
 TODO:
 
+send the lob reciept email to the pdf sender.
+
 change the ui so its easier to know what to do with the PDF
 
 its possible to charge for sending a pdf even though the lob api call could fail
