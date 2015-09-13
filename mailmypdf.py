@@ -20,8 +20,8 @@ COLOR = "101"
 
 JINJA_ENVIRONMENT = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)), extensions=['jinja2.ext.autoescape'])
 
-stripe.api_key = "sk_test_y86WRvti8rQiCRIyiuw8TctG"
-#stripe.api_key = "sk_live_VzFGpFF5Y4gVkcbgbZ7eSKna"
+stripe.api_key = "sk_test_y86WRvti8rQiCRIyiuw8TctG" # TEST
+#stripe.api_key = "sk_live_VzFGpFF5Y4gVkcbgbZ7eSKna" # LIVE
 
 # TODO: Need to figure out how long we wait before we delete the file from the store?
 # When UploadHandler is called, the blobstore should already be storing the file.
@@ -156,11 +156,15 @@ class StripeProcessPaymentHandler(webapp2.RequestHandler):
             # maybe we already go to the except clause if there's an error, so therefore, if we're still
             # in this block of code, we must have succeeded? so return "True"? maybe double check stripe docs to make sure
             
+            # logging.info("charge: %s", charge);
+            
             outputDict = {}
             outputDict['paid'] = charge.paid
             outputDict['refundURL'] = str(charge.refunds.url[1:-1])
             
             outputJSON = json.dumps(outputDict)
+
+            # logging.info("outputJSON: %s", outputJSON);
 
             self.response.write( outputJSON )
         except stripe.CardError, e:

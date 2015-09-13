@@ -28,7 +28,8 @@ function alertSuccess( messageString )
     $(".alert").show();
 }
 
-$(window).on('popstate', function(){
+$(window).on('popstate', function()
+{
     closeStripeModal();
 });
 
@@ -49,15 +50,15 @@ var dropzoneOptions = {
     this.on("acceptedfile", function(file)
     {
         globalDropzone.removeAllFiles();
-        //console.log("clickable: %s", globalDropzone.options.clickable);
+        
         $('#MailMyPDFButtonClickable').css("display", "none");
         $('#MailMyPDFButton').css("display", "");
     });
     
     this.on("addedfile", function(file)
     {
-        // todo: if the alert is of class info? or if it's telling the user to drop a file on the form
-        if ($(".alert").hasClass("alert-info")) {
+        if ($(".alert").hasClass("alert-info"))
+        {
             $(".alert").hide();
         }
         
@@ -72,19 +73,22 @@ var dropzoneOptions = {
         alertError( message );
     });
     
-    globalDropzone.on("dragover", function() {
+    globalDropzone.on("dragover", function()
+                      {
         $(".dropzone").css("border-width", "2px");
         $(".dropzone").css("border-style", "dashed");
         $(".dropzone").css("border-color", "#ccc");
         return false;
     });
     
-    globalDropzone.on("dragleave", function() {
+    globalDropzone.on("dragleave", function()
+    {
         $(".dropzone").css("border-style", "none");
         return false;
     });
 
-    this.on("success", function(data) {
+    this.on("success", function(data)
+    {
         var url = data.xhr.response;
         
         // properly retrieve the objectID and its downloadURL from the response from the backend.
@@ -160,7 +164,6 @@ function submitMailingJobToLob( refundURL )
             
             $("#downloadURL").removeClass();
             $("#objectid").removeClass();
-            //$('#MailMyPDFButton').addClass("disabled");
             
             globalDropzone.removeAllFiles();
         }
@@ -200,7 +203,8 @@ $(function()
       });
     });
     
-    $('#MailMyPDFButton').on('click', function(e) {
+    $('#MailMyPDFButton').on('click', function(e)
+    {
         var dropzoneFileCount = globalDropzone.getAcceptedFiles().length;
         
         if ( dropzoneFileCount > 0 )
@@ -307,12 +311,10 @@ $(function()
         
         function jobQuoteReqListener()
         {
-            var jobQuote = this.responseText;
-            
             //console.log("jobQuoteResponseUnparsed: " + jobQuote);
             //console.log("jobQuoteResponse: " + parseFloat(jobQuote));
             
-            var jobPrice = parseFloat(jobQuote);
+            var jobPrice = parseFloat( this.responseText );
             
             //console.log("jobPrice: %s", jobPrice);
             
@@ -339,7 +341,8 @@ $(function()
         // Convert the jobPrice from dollars into cents, then add 5 cents so we actually make money.
         jobPrice = (jobPrice * 100) + 5;
         
-        var handler = StripeCheckout.configure({
+        var handler = StripeCheckout.configure(
+        {
             key: 'pk_test_qjYhk6ALhfcFYHVZBu6GIoCY', // Publishable Stripe API key.
             //key: 'pk_live_4b2UkcADEzszXLbdokQBeOPZ',
             image: 'static/adobe.png',
@@ -356,16 +359,16 @@ $(function()
                     // If the checkout payment completed successfully, then create the lob job.
                     // Otherwise alert the user that we weren't able to process the Stripe payment.
                     
-                    //console.log("this.responseText: %s", this.responseText);
+                    console.log("this.responseText: %s", this.responseText);
                     
                     obj = JSON.parse(this.responseText);
                     
-                    //console.log("paid: %s", obj.paid);
-                    //console.log("refundURL: %s", obj.refundURL);
+                    console.log("paid: %s", obj.paid);
+                    console.log("refundURL: %s", obj.refundURL);
                     
                     if ( obj.paid == true ) {
                         
-                        //console.log("stripe charge paid = true");
+                        console.log("stripe charge paid = true");
                         
                         submitMailingJobToLob( obj.refundURL );
                     }
@@ -488,7 +491,6 @@ $(function()
             
             alertInfo( "<strong>Submitting PDF file...</strong>" );
             $( "#dropzone" ).submit();
-            
         }
         
         var destAddressData = new FormData();
