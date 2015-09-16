@@ -100,13 +100,13 @@ var dropzoneOptions = {
         objID = objID.substr(3, objID.length - 4);
         objDownloadURL = objDownloadURL.substr(2, objDownloadURL.length - 4);
         
-        //console.log( "objectID: %s", objID );
-        //console.log( "downloadURL: %s", objDownloadURL );
+        // console.log( "objectID: %s", objID );
+        // console.log( "downloadURL: %s", objDownloadURL );
         
         // then write it into the class names of the spans (objectid and downloadURL)
         // think about what happens when we don't have the objID or downloadURL...
         
-        if (objID && objDownloadURL)
+        if ( objID && objDownloadURL )
         {
             document.getElementById("objectid").className = objID;
             document.getElementById("downloadURL").className = objDownloadURL;
@@ -127,7 +127,7 @@ function cancelStripe()
 
 function submitMailingJobToLob( refundURL )
 {
-    //  Make an xhr request to the python server to create the job through the Lob API
+    // Make an xhr request to the python server to create the job through the Lob API
     
     var jobCreateData = new FormData();
     jobCreateData.append('name', 'Uploaded PDF');
@@ -158,7 +158,12 @@ function submitMailingJobToLob( refundURL )
     {
         //console.log("jobCreateReqListener responseText: %s", this.responseText);
         
-        if ( this.responseText == "True" )
+        obj = JSON.parse( this.responseText );
+        
+        console.log( "obj.validJob: %s", obj.validJob );
+        console.log( "obj.jobid: %s", obj.jobid );
+        
+        if ( obj.validJob == true )
         {
             alertSuccess( "Your PDF will be mailed shortly. Send Another?" );
             
@@ -166,41 +171,54 @@ function submitMailingJobToLob( refundURL )
             $("#objectid").removeClass();
             
             globalDropzone.removeAllFiles();
+            
+            sendEmailReceipt( obj.jobid );
         }
         else
         {
-            var localhostWarning;
-            if (document.location.hostname == "localhost")
-                localhostWarning = "<strong>localhost</strong>";
-            
-            alertError( "Unable to create Lob job for some reason. A refund will be automatically issued." + localhostWarning );
+            alertError( "Unable to create Lob job for some reason. A refund will be automatically issued." );
             
             //console.log("refundURL: %s", refundURL);
             
             // if the Lob Job fails, then we need to initiate a stripe refund.
-            // we need the chargeid or even better the refunds URL
+            // we need the chargeid or even better the refunds URL.
+            // make sure we're sending the stripe refund receipt to the original payer.
         }
     }
 }
 
+function sendEmailReceipt( jobid )
+{
+    // Make an xhr request to the backend to log in to mailmypdf@scourcritical.com
+    // Find the email with the jobid of the job that was sent to lob.
+    // Forward it to the email address of the sender.
+    
+    var lobEmailReceiptRequestData = new FormData();
+    lobEmailReceiptRequestData.append('srcEmail', document.getElementsByName("srcEmail")[0].value);
+    
+    function lobEmailReceiptReqListener()
+    {
+        console.log("lobEmailReceiptReqListener (ResponseText): %s", this.responseText);
+    }
+    
+    var lobEmailReceiptXhr = new XMLHttpRequest();
+    lobEmailReceiptXhr.onload = lobEmailReceiptReqListener;
+    lobEmailReceiptXhr.open('POST', 'lob/sendLobEmailReceipt');
+    lobEmailReceiptXhr.send( lobEmailReceiptRequestData );
+}
+
 $(function()
 {
-    // After the class names are written into the spans, process the stripe payment.
     $(document).bind('wroteClassData',function()
     {
+        // After the class names are written into the spans, process the stripe payment.
         processPayment();
     });
     
     $( "#dropzone" ).submit(function( event )
     {
-      event.preventDefault();
-      
-      globalDropzone.processQueue();
-      
-      globalDropzone.on("complete", function(file)
-      {
-        // we used to processPayment here, but now we do that after the classNames for objectID and downloadURL are written into the html.
-      });
+        event.preventDefault();
+        globalDropzone.processQueue();
     });
     
     $('#MailMyPDFButton').on('click', function(e)
@@ -286,7 +304,7 @@ $(function()
     
     function getJobQuote()
     {
-        // make job quote request to python backend and get the price for a job using the test api key
+        // Make job quote request to python backend and get the price for a job using the test api key
         var jobQuote = -1;
         
         var jobQuoteRequestData = new FormData();
@@ -311,12 +329,12 @@ $(function()
         
         function jobQuoteReqListener()
         {
-            //console.log("jobQuoteResponseUnparsed: " + jobQuote);
-            //console.log("jobQuoteResponse: " + parseFloat(jobQuote));
+            // console.log("jobQuoteResponseUnparsed: " + jobQuote);
+            // console.log("jobQuoteResponse: " + parseFloat(jobQuote));
             
             var jobPrice = parseFloat( this.responseText );
             
-            //console.log("jobPrice: %s", jobPrice);
+            // console.log("jobPrice: %s", jobPrice);
             
             if ( jobPrice > -1 )
             {
@@ -344,7 +362,7 @@ $(function()
         var handler = StripeCheckout.configure(
         {
             key: 'pk_test_qjYhk6ALhfcFYHVZBu6GIoCY', // Publishable Stripe API key.
-            //key: 'pk_live_4b2UkcADEzszXLbdokQBeOPZ',
+            // key: 'pk_live_4b2UkcADEzszXLbdokQBeOPZ',
             image: 'static/adobe.png',
             name: 'MailMyPDF',
             description: 'Physically mailing a PDF file',
@@ -359,16 +377,16 @@ $(function()
                     // If the checkout payment completed successfully, then create the lob job.
                     // Otherwise alert the user that we weren't able to process the Stripe payment.
                     
-                    //console.log("this.responseText: %s", this.responseText);
+                    // console.log("this.responseText: %s", this.responseText);
                     
-                    obj = JSON.parse(this.responseText);
+                    obj = JSON.parse( this.responseText );
                     
-                    //console.log("paid: %s", obj.paid);
-                   // console.log("refundURL: %s", obj.refundURL);
+                    // console.log("paid: %s", obj.paid);
+                    // console.log("refundURL: %s", obj.refundURL);
                     
                     if ( obj.paid == true ) {
                         
-                        //console.log("stripe charge paid = true");
+                        // console.log("stripe charge paid = true");
                         
                         submitMailingJobToLob( obj.refundURL );
                     }
@@ -376,7 +394,7 @@ $(function()
                         alertError( "Unable to successfully process the Stripe payment. Try again later." );
                 }
                 
-                //console.log("tokenid: %s", token.id );
+                // console.log("tokenid: %s", token.id );
                 
                 var paymentData = new FormData();
                 paymentData.append('tokenid', token.id);
@@ -511,19 +529,19 @@ $(function()
     $(document).ready(function()
     {
         alertInfo( "To mail a PDF, first drop a file onto the page." );
-        
         /*
-        document.getElementsByName("srcName")[0].value = "aaron hesse";
-        document.getElementsByName("srcAddress1")[0].value = "4004 houston court";
-        document.getElementsByName("srcCity")[0].value = "Concord";
-        document.getElementsByName("srcState")[0].value =  "CA";
-        document.getElementsByName("srcZip")[0].value = "94521";
+        document.getElementsByName("srcName")[0].value      = "aaron hesse";
+        document.getElementsByName("srcEmail")[0].value     = "aaron@scourcritical.com";
+        document.getElementsByName("srcAddress1")[0].value  = "4004 houston court";
+        document.getElementsByName("srcCity")[0].value      = "Concord";
+        document.getElementsByName("srcState")[0].value     =  "CA";
+        document.getElementsByName("srcZip")[0].value       = "94521";
         
-        document.getElementsByName("destName")[0].value = "aaron hesse";
+        document.getElementsByName("destName")[0].value     = "aaron hesse";
         document.getElementsByName("destAddress1")[0].value = "4004 houston court";
-        document.getElementsByName("destCity")[0].value = "Concord";
-        document.getElementsByName("destState")[0].value = "CA";
-        document.getElementsByName("destZip")[0].value = "94521";
+        document.getElementsByName("destCity")[0].value     = "Concord";
+        document.getElementsByName("destState")[0].value    = "CA";
+        document.getElementsByName("destZip")[0].value      = "94521";
         */
     });
 });

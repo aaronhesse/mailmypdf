@@ -136,7 +136,15 @@ class LobCreateJobRequestHandler(webapp2.RequestHandler):
             self.request.get('object_id')
         )
         
-        self.response.write( lob.validateJob( job["id"] ) )
+        outputDict = {}
+        outputDict['jobid'] = job["id"]
+        outputDict['validJob'] = lob.validateJob( job["id"] )
+        
+        outputJSON = json.dumps( outputDict )
+        
+        logging.info( "outputJSON: %s", outputJSON )
+        
+        self.response.write( outputJSON )
 
 class LobCheckJobRequestHandler(webapp2.RequestHandler):
     def post(self):
@@ -156,20 +164,28 @@ class StripeProcessPaymentHandler(webapp2.RequestHandler):
             # maybe we already go to the except clause if there's an error, so therefore, if we're still
             # in this block of code, we must have succeeded? so return "True"? maybe double check stripe docs to make sure
             
-            # logging.info("charge: %s", charge);
+            #logging.info("charge: %s", charge)
             
             outputDict = {}
             outputDict['paid'] = charge.paid
-            outputDict['refundURL'] = str(charge.refunds.url[1:-1])
+            outputDict['refundURL'] = str( charge.refunds.url[1:-1] )
             
-            outputJSON = json.dumps(outputDict)
-
-            # logging.info("outputJSON: %s", outputJSON);
-
+            outputJSON = json.dumps( outputDict )
+            
+            #logging.info("outputJSON: %s", outputJSON)
+            
             self.response.write( outputJSON )
         except stripe.CardError, e:
             self.response.write("The card has been declined")
             pass
+
+class LobSendEmailReceiptRequestHandler(webapp2.RequestHandler):
+    def post(self):
+        # Do Gmail API stuff here to find and forward the email for the proper jobid.
+        
+        logging.info("Email Reciept Forwarded for lob job: %s, %s.", self.request.get('jobid'), self.request.get('srcEmail'))
+        
+        self.response.write("done sending email receipt");
 
 class PDFDownloadHandler(blobstore_handlers.BlobstoreDownloadHandler):
     def get(self, pdf_key):
@@ -193,5 +209,6 @@ application = webapp2.WSGIApplication([
     ('/lob/validateJob', LobCheckJobRequestHandler),
     ('/lob/getJobQuote', LobGetJobQuoteRequestHandler),
     ('/lob/createJob', LobCreateJobRequestHandler),
+    ('/lob/sendLobEmailReceipt', LobSendEmailReceiptRequestHandler),
     ('/stripe/processPayment', StripeProcessPaymentHandler)
 ], debug=True)
