@@ -7,6 +7,7 @@ import webapp2
 import logging
 import sys
 import json
+import gmail
 
 sys.path.insert(0, 'libs')
 
@@ -181,11 +182,9 @@ class StripeProcessPaymentHandler(webapp2.RequestHandler):
 
 class LobSendEmailReceiptRequestHandler(webapp2.RequestHandler):
     def post(self):
-        # Do Gmail API stuff here to find and forward the email for the proper jobid.
-        
+        gmail.forwardLobEmailReceipt( self.request.get('jobid'), self.request.get('sendersEmailAddress') )
         logging.info("Email Reciept Forwarded for lob job: %s, %s.", self.request.get('jobid'), self.request.get('srcEmail'))
-        
-        self.response.write("done sending email receipt");
+        self.response.write( "True" );
 
 class PDFDownloadHandler(blobstore_handlers.BlobstoreDownloadHandler):
     def get(self, pdf_key):
