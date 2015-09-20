@@ -7,12 +7,14 @@ import re
 # List the contents of the inbox, then search for the email containing the
 # jobId that was created by Lob.
 
-def sendEmailReceipt( jobid, srcEmail ):
+def sendEmailReceipt( jobid, srcEmail, deliveryDate ):
     
     mailmypdf = {
         'username': 'mailmypdf@scourcritical.com',
         'password': 'wc5Yz#guPF&e'
     }
+    
+    '''
     
     msg = ''
     mail = ''
@@ -35,6 +37,15 @@ def sendEmailReceipt( jobid, srcEmail ):
     
     mail.close()
     mail.logout()
+    
+    
+    '''
+    
+    # TODO: should we include the lob asset URL here or some kind of preview to view the PDF being sent?
+    # for example, much like the original lob reciept email
+    
+    msg = 'Your PDF has been sent. The expected delivery date is: ' + deliveryDate + "."
+    msg += 'The job number for your reference is: ' + jobid
     
     # Connect to the gmail SMTP server and send the email to the user who created the lob job.
     

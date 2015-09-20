@@ -166,7 +166,7 @@ function submitMailingJobToLob( refundURL )
         
         if ( obj.validJob == true )
         {
-            alertSuccess( "Your PDF will be mailed shortly. Send Another?" );
+            alertSuccess( "Your PDF will be mailed shortly. Its expected delivery date is: <strong>" + obj.deliveryDate + "</strong>" );
             
             $("#downloadURL").removeClass();
             $("#objectid").removeClass();

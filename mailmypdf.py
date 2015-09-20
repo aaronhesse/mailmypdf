@@ -187,7 +187,7 @@ class LobSendEmailReceiptRequestHandler(webapp2.RequestHandler):
         srcEmail = self.request.get('srcEmail')
         deliveryDate = self.request.get('deliveryDate')
         
-        #gmail.sendEmailReceipt( jobid, srcEmail )
+        #gmail.sendEmailReceipt( jobid, srcEmail, deliveryDate )
         #logging.info("Email Reciept Forwarded for lob job: %s, %s.", self.request.get('jobid'), self.request.get('srcEmail'))
         
         self.response.write( "Not yet Implemented. (" + jobid + ", " + srcEmail + ", " + deliveryDate + ")" );
