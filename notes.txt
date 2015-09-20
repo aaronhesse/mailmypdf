@@ -2,9 +2,7 @@ v1
 
 TODO:
 
-send the lob reciept email to the pdf sender.
- - this cant be done. we need to use the lobapi to get the estimated delivery date
- - then create our own reciept that we send through SMTP
+move api keys to environment variables inside of GAE (stored in app.yaml maybe?)
 
 its possible to charge for sending a pdf even though the lob api call could fail
     implement automatic refunds in this case
@@ -16,6 +14,10 @@ actually rank in google for some of the search results
     post to hacker news & reddit
 
 v2
+
+send the lob reciept email to the pdf sender.
+ - this cant be done. we need to use the lobapi to get the estimated delivery date
+ - then create our own reciept that we send through SMTP
 
 add ability to do bulk mailing
     - upload text file of addresses for To, and a single pdf

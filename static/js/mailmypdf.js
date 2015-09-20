@@ -160,8 +160,8 @@ function submitMailingJobToLob( refundURL )
         
         obj = JSON.parse( this.responseText );
         
-        console.log( "obj.validJob: %s", obj.validJob );
         console.log( "obj.jobid: %s", obj.jobid );
+        console.log( "obj.validJob: %s", obj.validJob );
         console.log( "obj.deliveryDate: %s", obj.deliveryDate );
         
         if ( obj.validJob == true )
