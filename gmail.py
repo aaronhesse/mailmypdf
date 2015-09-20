@@ -7,25 +7,20 @@ import re
 # List the contents of the inbox, then search for the email containing the
 # jobId that was created by Lob.
 
-mailmypdf = {
-    'username': 'mailmypdf@scourcritical.com',
-    'password': 'wc5Yz#guPF&e'
-}
-
-msg = ''
-
-def forwardLobEmailReceipt( jobid, toAddress ):
-    login()
-    findEmail( jobid )
-    logout()
-    sendEmailCopy( toAddress )
-
-def login():
+def sendEmailReceipt( jobid, srcEmail ):
+    
+    mailmypdf = {
+        'username': 'mailmypdf@scourcritical.com',
+        'password': 'wc5Yz#guPF&e'
+    }
+    
+    msg = ''
+    mail = ''
+    
     mail = imaplib.IMAP4_SSL( 'imap.gmail.com' )
     mail.login( mailmypdf['username'], mailmypdf['password'] )
     mail.select( 'inbox' )
-
-def findEmail( jobid ):
+    
     typ, data = mail.search( None, 'ALL' )
     for num in data[0].split():
         typ, data = mail.fetch( num, '(RFC822)' )
@@ -37,16 +32,13 @@ def findEmail( jobid ):
                     for part in emailMessage.walk():
                         if part.get_content_type() == 'text/plain':
                             msg = part.get_payload()
-
-def logout():
+    
     mail.close()
     mail.logout()
-
-def sendEmailCopy( toAddress ):
-    # Connect to the gmail SMTP server and send the email to the user who
-    # created the lob job.
     
-    # toAddress   = 'aaron@scourcritical.com'
+    # Connect to the gmail SMTP server and send the email to the user who created the lob job.
+    
+    toAddress   = 'aaron@scourcritical.com'
     fromAddress = mailmypdf['username']
     server      = smtplib.SMTP('smtp.gmail.com:587')
     

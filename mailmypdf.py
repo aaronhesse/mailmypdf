@@ -7,7 +7,6 @@ import webapp2
 import logging
 import sys
 import json
-import gmail
 
 sys.path.insert(0, 'libs')
 
@@ -140,6 +139,7 @@ class LobCreateJobRequestHandler(webapp2.RequestHandler):
         outputDict = {}
         outputDict['jobid'] = job["id"]
         outputDict['validJob'] = lob.validateJob( job["id"] )
+        outputDict['deliveryDate'] = job["expected_delivery_date"]
         
         outputJSON = json.dumps( outputDict )
         
@@ -182,9 +182,15 @@ class StripeProcessPaymentHandler(webapp2.RequestHandler):
 
 class LobSendEmailReceiptRequestHandler(webapp2.RequestHandler):
     def post(self):
-        gmail.forwardLobEmailReceipt( self.request.get('jobid'), self.request.get('sendersEmailAddress') )
-        logging.info("Email Reciept Forwarded for lob job: %s, %s.", self.request.get('jobid'), self.request.get('srcEmail'))
-        self.response.write( "True" );
+
+        jobid = self.request.get('jobid')
+        srcEmail = self.request.get('srcEmail')
+        deliveryDate = self.request.get('deliveryDate')
+        
+        #gmail.sendEmailReceipt( jobid, srcEmail )
+        #logging.info("Email Reciept Forwarded for lob job: %s, %s.", self.request.get('jobid'), self.request.get('srcEmail'))
+        
+        self.response.write( "Not yet Implemented. (" + jobid + ", " + srcEmail + ", " + deliveryDate + ")" );
 
 class PDFDownloadHandler(blobstore_handlers.BlobstoreDownloadHandler):
     def get(self, pdf_key):

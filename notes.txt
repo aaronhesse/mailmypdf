@@ -3,6 +3,8 @@ v1
 TODO:
 
 send the lob reciept email to the pdf sender.
+ - this cant be done. we need to use the lobapi to get the estimated delivery date
+ - then create our own reciept that we send through SMTP
 
 its possible to charge for sending a pdf even though the lob api call could fail
     implement automatic refunds in this case

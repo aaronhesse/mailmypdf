@@ -162,6 +162,7 @@ function submitMailingJobToLob( refundURL )
         
         console.log( "obj.validJob: %s", obj.validJob );
         console.log( "obj.jobid: %s", obj.jobid );
+        console.log( "obj.deliveryDate: %s", obj.deliveryDate );
         
         if ( obj.validJob == true )
         {
@@ -172,13 +173,13 @@ function submitMailingJobToLob( refundURL )
             
             globalDropzone.removeAllFiles();
             
-            sendEmailReceipt( obj.jobid );
+            sendEmailReceipt( obj.jobid, obj.deliveryDate );
         }
         else
         {
             alertError( "Unable to create Lob job for some reason. A refund will be automatically issued." );
             
-            //console.log("refundURL: %s", refundURL);
+            console.log("refundURL: %s", refundURL);
             
             // if the Lob Job fails, then we need to initiate a stripe refund.
             // we need the chargeid or even better the refunds URL.
@@ -187,23 +188,25 @@ function submitMailingJobToLob( refundURL )
     }
 }
 
-function sendEmailReceipt( jobid )
+function sendEmailReceipt( jobid, deliveryDate )
 {
     // Make an xhr request to the backend to log in to mailmypdf@scourcritical.com
     // Find the email with the jobid of the job that was sent to lob.
     // Forward it to the email address of the sender.
     
     var lobEmailReceiptRequestData = new FormData();
-    lobEmailReceiptRequestData.append('srcEmail', document.getElementsByName("srcEmail")[0].value);
+    lobEmailReceiptRequestData.append( 'srcEmail', document.getElementsByName("srcEmail")[0].value );
+    lobEmailReceiptRequestData.append( 'deliveryDate', deliveryDate );
+    lobEmailReceiptRequestData.append( 'jobid', jobid );
     
     function lobEmailReceiptReqListener()
     {
-        console.log("lobEmailReceiptReqListener (ResponseText): %s", this.responseText);
+        console.log( "lobEmailReceiptReqListener (ResponseText): %s", this.responseText );
     }
     
     var lobEmailReceiptXhr = new XMLHttpRequest();
     lobEmailReceiptXhr.onload = lobEmailReceiptReqListener;
-    lobEmailReceiptXhr.open('POST', 'lob/sendLobEmailReceipt');
+    lobEmailReceiptXhr.open( 'POST', 'lob/sendLobEmailReceipt' );
     lobEmailReceiptXhr.send( lobEmailReceiptRequestData );
 }
 
