@@ -2,8 +2,6 @@ v1
 
 TODO:
 
-move api keys to environment variables inside of GAE (stored in app.yaml maybe?)
-
 its possible to charge for sending a pdf even though the lob api call could fail
     implement automatic refunds in this case
 

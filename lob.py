@@ -4,12 +4,14 @@ import json
 import urllib
 import logging
 import pprint
+import os
 
 from google.appengine.api import urlfetch
 from webapp2_extras.security import generate_random_string
 
-API_KEY = "test_166c82095487bb7cd46145131e7299225f8"  # Lob.com API Test Key
-#API_KEY = "live_ad185aa5940c4d83ce1bacb77753b144d49"  # Lob.com API Live Key
+# Change this to LOB_API_LIVE_KEY when everything is ready to go live.
+
+API_KEY = os.environ['LOB_API_TEST_KEY']
 
 BASE_URL = "https://api.lob.com/v1/"
 
@@ -45,9 +47,11 @@ def api_call(path, payload=None, method='GET', headers=None, deadline=30, test=F
     if headers is None:
         headers = {}
 
+    # If we're in test mode, use the LOB API TEST KEY (generally used for getting job quotes / prices).
+    # Otherwise use whatever API_KEY we set earlier.
+
     if test:
-        # hard-coded test api key used for getting quotes
-        api_key = "test_166c82095487bb7cd46145131e7299225f8"
+        api_key = os.environ['LOB_API_TEST_KEY']
     else:
         api_key = API_KEY
 

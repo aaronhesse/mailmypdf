@@ -20,8 +20,12 @@ COLOR = "101"
 
 JINJA_ENVIRONMENT = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)), extensions=['jinja2.ext.autoescape'])
 
-stripe.api_key = "sk_test_y86WRvti8rQiCRIyiuw8TctG" # TEST
+#stripe.api_key = "sk_test_y86WRvti8rQiCRIyiuw8TctG" # TEST
 #stripe.api_key = "sk_live_VzFGpFF5Y4gVkcbgbZ7eSKna" # LIVE
+
+# Change this API KEY to the LIVE key when everything is said and done.
+
+stripe.api_key = os.environ['STRIPE_API_TEST_KEY']
 
 # TODO: Need to figure out how long we wait before we delete the file from the store?
 # When UploadHandler is called, the blobstore should already be storing the file.
