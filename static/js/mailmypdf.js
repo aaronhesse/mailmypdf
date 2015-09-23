@@ -125,7 +125,7 @@ function cancelStripe()
     $("#card-expiry-year").val('');
 }
 
-function submitMailingJobToLob( refundURL )
+function submitMailingJobToLob( refundURL, chargeID )
 {
     // Make an xhr request to the python server to create the job through the Lob API
     
@@ -180,10 +180,22 @@ function submitMailingJobToLob( refundURL )
             alertError( "Unable to create Lob job for some reason. A refund will be automatically issued." );
             
             console.log("refundURL: %s", refundURL);
+            console.log("chargeID: %s", chargeID);
             
-            // if the Lob Job fails, then we need to initiate a stripe refund.
-            // we need the chargeid or even better the refunds URL.
-            // make sure we're sending the stripe refund receipt to the original payer.
+            // If the Lob job creation or processing fails, then we need to initiate a stripe refund.
+            
+            var stripeRefundRequestData = new FormData();
+            stripeRefundRequestData.append( 'chargeid', chargeID );
+            
+            function stripeRefundReqListener()
+            {
+                console.log( "stripeRefundReqListener (ResponseText): %s", this.responseText );
+            }
+            
+            var stripeRefundXhr = new XMLHttpRequest();
+            stripeRefundXhr.onload = stripeRefundReqListener;
+            stripeRefundXhr.open( 'POST', 'stripe/issueRefund' );
+            stripeRefundXhr.send( stripeRefundRequestData );
         }
     }
 }
@@ -391,7 +403,7 @@ $(function()
                         
                         // console.log("stripe charge paid = true");
                         
-                        submitMailingJobToLob( obj.refundURL );
+                        submitMailingJobToLob( obj.refundURL, obj.chargeid );
                     }
                     else
                         alertError( "Unable to successfully process the Stripe payment. Try again later." );
@@ -537,7 +549,7 @@ $(function()
         document.getElementsByName("srcEmail")[0].value     = "aaron@scourcritical.com";
         document.getElementsByName("srcAddress1")[0].value  = "4004 houston court";
         document.getElementsByName("srcCity")[0].value      = "Concord";
-        document.getElementsByName("srcState")[0].value     =  "CA";
+        document.getElementsByName("srcState")[0].value     = "CA";
         document.getElementsByName("srcZip")[0].value       = "94521";
         
         document.getElementsByName("destName")[0].value     = "aaron hesse";

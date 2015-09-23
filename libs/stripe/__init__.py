@@ -15,17 +15,44 @@ verify_ssl_certs = True
 
 # Resource
 from stripe.resource import (  # noqa
-    Account, Balance, BalanceTransaction, Card, Charge, Customer, Invoice,
-    InvoiceItem, Plan, Token, Coupon, Event, Transfer, Recipient, FileUpload,
-    ApplicationFee, Subscription, BitcoinReceiver, BitcoinTransaction)
+    Account,
+    ApplicationFee,
+    Balance,
+    BalanceTransaction,
+    BankAccount,
+    BitcoinReceiver,
+    BitcoinTransaction,
+    Card,
+    Charge,
+    Coupon,
+    Customer,
+    Dispute,
+    Event,
+    FileUpload,
+    Invoice,
+    InvoiceItem,
+    Order,
+    Plan,
+    Product,
+    Recipient,
+    Refund,
+    SKU,
+    Subscription,
+    Token,
+    Transfer)
 
 # Error imports.  Note that we may want to move these out of the root
 # namespace in the future and you should prefer to access them via
 # the fully qualified `stripe.error` module.
 
 from stripe.error import (  # noqa
-    StripeError, APIError, APIConnectionError, AuthenticationError, CardError,
-    InvalidRequestError)
+    APIConnectionError,
+    APIError,
+    AuthenticationError,
+    RateLimitError,
+    CardError,
+    InvalidRequestError,
+    StripeError)
 
 # DEPRECATED: These imports will be moved out of the root stripe namespace
 # in version 2.0
@@ -33,7 +60,14 @@ from stripe.error import (  # noqa
 from stripe.version import VERSION  # noqa
 from stripe.api_requestor import APIRequestor  # noqa
 from stripe.resource import (  # noqa
-    convert_to_stripe_object, StripeObject, StripeObjectEncoder,
-    APIResource, ListObject, SingletonAPIResource, ListableAPIResource,
-    CreateableAPIResource, UpdateableAPIResource, DeletableAPIResource)
+    APIResource,
+    CreateableAPIResource,
+    DeletableAPIResource,
+    ListObject,
+    ListableAPIResource,
+    SingletonAPIResource,
+    StripeObject,
+    StripeObjectEncoder,
+    UpdateableAPIResource,
+    convert_to_stripe_object)
 from stripe.util import json, logger  # noqa

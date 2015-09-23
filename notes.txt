@@ -2,8 +2,12 @@ v1
 
 TODO:
 
-its possible to charge for sending a pdf even though the lob api call could fail
-    implement automatic refunds in this case
+remove history for all files which have ever included api keys:
+    mailmypdf.py
+    lob.py
+    
+maybe write a python script to add the keys from a GAE, but git ignored file (apikeys.txt), to app.yaml,
+then call appcfg.py update ., then remove the keys from app.yaml, this way app.yaml stays in git control?
 
 prevent the site from making more than $10 worth of requests per day? (during testing/beta)
 make sure we're never charging too little (or less than what lob is charging).?

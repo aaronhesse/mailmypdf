@@ -4,7 +4,7 @@ import random
 import re
 import string
 import sys
-import unittest
+import unittest2
 
 from mock import patch, Mock
 
@@ -26,6 +26,12 @@ DUMMY_CHARGE = {
     'amount': 100,
     'currency': 'usd',
     'card': DUMMY_CARD
+}
+
+DUMMY_DISPUTE = {
+    'status': 'needs_response',
+    'currency': 'usd',
+    'metadata': {}
 }
 
 DUMMY_PLAN = {
@@ -109,7 +115,7 @@ SAMPLE_INVOICE = stripe.util.json.loads("""
 """)
 
 
-class StripeTestCase(unittest.TestCase):
+class StripeTestCase(unittest2.TestCase):
     RESTORE_ATTRIBUTES = ('api_version', 'api_key')
 
     def setUp(self):

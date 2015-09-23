@@ -1,5 +1,5 @@
 import sys
-import unittest
+import unittest2
 
 from mock import Mock, patch
 
@@ -87,7 +87,7 @@ class ClientTestBase():
 
             headers = {'my-header': 'header val'}
 
-            body, code = self.make_request(
+            body, code, _ = self.make_request(
                 meth, abs_url, headers, data)
 
             self.assertEqual(200, code)
@@ -163,6 +163,7 @@ class Urllib2ClientTests(StripeUnitTestCase, ClientTestBase):
         response = Mock
         response.read = Mock(return_value=body)
         response.code = code
+        response.info = Mock(return_value={})
 
         self.request_object = Mock()
         mock.Request = Mock(return_value=self.request_object)
@@ -226,5 +227,38 @@ class PycurlClientTests(StripeUnitTestCase, ClientTestBase):
         # TODO: Check the setopt calls
         pass
 
+
+class APIEncodeTest(StripeUnitTestCase):
+
+    def test_encode_dict(self):
+        body = {
+            'foo': {
+                'dob': {
+                    'month': 1,
+                },
+                'name': 'bat'
+            },
+        }
+
+        values = [t for t in stripe.api_requestor._api_encode(body)]
+
+        self.assertTrue(('foo[dob][month]', 1) in values)
+        self.assertTrue(('foo[name]', 'bat') in values)
+
+    def test_encode_array(self):
+        body = {
+            'foo': [{
+                'dob': {
+                    'month': 1,
+                },
+                'name': 'bat'
+            }],
+        }
+
+        values = [t for t in stripe.api_requestor._api_encode(body)]
+
+        self.assertTrue(('foo[][dob][month]', 1) in values)
+        self.assertTrue(('foo[][name]', 'bat') in values)
+
 if __name__ == '__main__':
-    unittest.main()
+    unittest2.main()

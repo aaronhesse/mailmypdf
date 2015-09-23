@@ -12,7 +12,7 @@ from stripe.test.helper import (
     MySingleton, MyListable, MyCreatable, MyUpdateable, MyDeletable,
     MyResource, SAMPLE_INVOICE, NOW,
     DUMMY_CARD, DUMMY_CHARGE, DUMMY_PLAN, DUMMY_COUPON,
-    DUMMY_INVOICE_ITEM)
+    DUMMY_INVOICE_ITEM, DUMMY_DISPUTE)
 
 from stripe import util
 
@@ -476,6 +476,142 @@ class UpdateableAPIResourceTests(StripeApiTestCase):
             None
         )
 
+    def test_array_setting(self):
+        acct = MyUpdateable.construct_from({
+            'id': 'myid',
+            'legal_entity': {}
+        }, 'mykey')
+
+        acct.legal_entity.additional_owners = [{'first_name': 'Bob'}]
+
+        self.assertTrue(acct is acct.save())
+
+        self.requestor_mock.request.assert_called_with(
+            'post',
+            '/v1/myupdateables/myid',
+            {
+                'legal_entity': {
+                    'additional_owners': [
+                        {'first_name': 'Bob'}
+                    ]
+                }
+            },
+            None
+        )
+
+    def test_array_none(self):
+        acct = MyUpdateable.construct_from({
+            'id': 'myid',
+            'legal_entity': {
+                'additional_owners': None,
+            }
+        }, 'mykey')
+
+        acct.foo = 'bar'
+
+        self.assertTrue(acct is acct.save())
+
+        self.requestor_mock.request.assert_called_with(
+            'post',
+            '/v1/myupdateables/myid',
+            {
+                'foo': 'bar',
+                'legal_entity': {},
+            },
+            None
+        )
+
+    def test_array_insertion(self):
+        acct = MyUpdateable.construct_from({
+            'id': 'myid',
+            'legal_entity': {
+                'additional_owners': []
+            }
+        }, 'mykey')
+
+        acct.legal_entity.additional_owners.append({'first_name': 'Bob'})
+
+        self.assertTrue(acct is acct.save())
+
+        self.requestor_mock.request.assert_called_with(
+            'post',
+            '/v1/myupdateables/myid',
+            {
+                'legal_entity': {
+                    'additional_owners': {
+                        '0': {'first_name': 'Bob'},
+                    }
+                }
+            },
+            None
+        )
+
+    def test_array_update(self):
+        acct = MyUpdateable.construct_from({
+            'id': 'myid',
+            'legal_entity': {
+                'additional_owners': [
+                    {'first_name': 'Bob'},
+                    {'first_name': 'Jane'}
+                ]
+            }
+        }, 'mykey')
+
+        acct.legal_entity.additional_owners[1].first_name = 'Janet'
+
+        self.assertTrue(acct is acct.save())
+
+        self.requestor_mock.request.assert_called_with(
+            'post',
+            '/v1/myupdateables/myid',
+            {
+                'legal_entity': {
+                    'additional_owners': {
+                        '0': {},
+                        '1': {'first_name': 'Janet'}
+                    }
+                }
+            },
+            None
+        )
+
+    def test_array_noop(self):
+        acct = MyUpdateable.construct_from({
+            'id': 'myid',
+            'legal_entity': {
+                'additional_owners': [{'first_name': 'Bob'}]
+            },
+            'currencies_supported': ['usd', 'cad']
+        }, 'mykey')
+
+        self.assertTrue(acct is acct.save())
+
+        self.requestor_mock.request.assert_called_with(
+            'post',
+            '/v1/myupdateables/myid',
+            {
+                'legal_entity': {'additional_owners': {'0': {}}}
+            },
+            None
+        )
+
+    def test_hash_noop(self):
+        acct = MyUpdateable.construct_from({
+            'id': 'myid',
+            'legal_entity': {
+                'address': {'line1': '1 Two Three'}
+            }
+        }, 'mykey')
+
+        self.assertTrue(acct is acct.save())
+
+        self.requestor_mock.request.assert_called_with(
+            'post',
+            '/v1/myupdateables/myid',
+            {'legal_entity': {'address': {}}},
+            None
+        )
+
     def test_save_replace_metadata_with_number(self):
         self.obj.baz = 'updated'
         self.obj.other = 'newval'
@@ -532,6 +668,32 @@ class UpdateableAPIResourceTests(StripeApiTestCase):
                     'size': 'm',
                     'info': 'a2',
                     'height': '',
+                    'score': 4,
+                }
+            },
+            None
+        )
+
+    def test_save_update_metadata(self):
+        self.obj.baz = 'updated'
+        self.obj.other = 'newval'
+        self.obj.metadata.update({
+            'size': 'm',
+            'info': 'a2',
+            'score': 4,
+        })
+
+        self.checkSave()
+
+        self.requestor_mock.request.assert_called_with(
+            'post',
+            '/v1/myupdateables/myid',
+            {
+                'baz': 'updated',
+                'other': 'newval',
+                'metadata': {
+                    'size': 'm',
+                    'info': 'a2',
                     'score': 4,
                 }
             },
@@ -661,6 +823,72 @@ class ChargeTest(StripeResourceTest):
         )
 
 
+class DisputeTest(StripeResourceTest):
+
+    def test_list_all_disputes(self):
+        stripe.Dispute.all(created={'lt': NOW})
+
+        self.requestor_mock.request.assert_called_with(
+            'get',
+            '/v1/disputes',
+            {
+                'created': {'lt': NOW},
+            }
+        )
+
+    def test_create_dispute(self):
+        stripe.Dispute.create(idempotency_key='foo', **DUMMY_DISPUTE)
+
+        self.requestor_mock.request.assert_called_with(
+            'post',
+            '/v1/disputes',
+            DUMMY_DISPUTE,
+            {'Idempotency-Key': 'foo'},
+        )
+
+    def test_retrieve_dispute(self):
+        stripe.Dispute.retrieve('dp_test_id')
+
+        self.requestor_mock.request.assert_called_with(
+            'get',
+            '/v1/disputes/dp_test_id',
+            {},
+            None
+        )
+
+    def test_update_dispute(self):
+        dispute = stripe.Dispute.construct_from({
+            'id': 'dp_update_id',
+            'evidence': {
+                'product_description': 'description',
+            },
+        }, 'api_key')
+        dispute.evidence['customer_name'] = 'customer'
+        dispute.evidence['uncategorized_text'] = 'text'
+        dispute.save()
+
+        self.requestor_mock.request.assert_called_with(
+            'post',
+            '/v1/disputes/dp_update_id',
+            {'evidence': {
+                'customer_name': 'customer',
+                'uncategorized_text': 'text',
+            }},
+            None
+        )
+
+    def test_close_dispute(self):
+        dispute = stripe.Dispute(id='dp_close_id')
+        dispute.close(idempotency_key='foo')
+
+        self.requestor_mock.request.assert_called_with(
+            'post',
+            '/v1/disputes/dp_close_id/close',
+            {},
+            {'Idempotency-Key': 'foo'},
+        )
+
+
 class AccountTest(StripeResourceTest):
 
     def test_retrieve_account_deprecated(self):
@@ -720,6 +948,47 @@ class AccountTest(StripeResourceTest):
             {
                 'legal_entity': {
                     'first_name': 'Bob',
+                },
+            },
+            None,
+        )
+
+    def test_account_delete_bank_account(self):
+        source = stripe.BankAccount.construct_from({
+            'account': 'acc_delete_ba',
+            'id': 'ba_delete_ba',
+        }, 'api_key')
+        source.delete()
+
+        self.requestor_mock.request.assert_called_with(
+            'delete',
+            '/v1/accounts/acc_delete_ba/external_accounts/ba_delete_ba',
+            {},
+            None
+        )
+
+    def test_verify_additional_owner(self):
+        acct = stripe.Account.construct_from({
+            'id': 'acct_update',
+            'additional_owners': [{
+                'first_name': 'Alice',
+                'verification': {},
+            }]
+        }, 'api_key')
+        owner = acct.additional_owners[0]
+        owner.verification.document = 'file_foo'
+        acct.save()
+
+        self.requestor_mock.request.assert_called_with(
+            'post',
+            '/v1/accounts/acct_update',
+            {
+                'additional_owners': {
+                    '0': {
+                        'verification': {
+                            'document': 'file_foo',
+                        },
+                    },
                 },
             },
             None,
@@ -806,16 +1075,16 @@ class CustomerTest(StripeResourceTest):
     def test_customer_add_card(self):
         customer = stripe.Customer.construct_from({
             'id': 'cus_add_card',
-            'cards': {
+            'sources': {
                 'object': 'list',
-                'url': '/v1/customers/cus_add_card/cards',
+                'url': '/v1/customers/cus_add_card/sources',
             },
         }, 'api_key')
-        customer.cards.create(card=DUMMY_CARD, idempotency_key='foo')
+        customer.sources.create(card=DUMMY_CARD, idempotency_key='foo')
 
         self.requestor_mock.request.assert_called_with(
             'post',
-            '/v1/customers/cus_add_card/cards',
+            '/v1/customers/cus_add_card/sources',
             {
                 'card': DUMMY_CARD,
             },
@@ -851,7 +1120,7 @@ class CustomerTest(StripeResourceTest):
 
         self.requestor_mock.request.assert_called_with(
             'post',
-            '/v1/customers/cus_update_card/cards/ca_update_card',
+            '/v1/customers/cus_update_card/sources/ca_update_card',
             {
                 'name': 'The Best',
             },
@@ -884,7 +1153,7 @@ class CustomerTest(StripeResourceTest):
 
         self.requestor_mock.request.assert_called_with(
             'delete',
-            '/v1/customers/cus_delete_card/cards/ca_delete_card',
+            '/v1/customers/cus_delete_card/sources/ca_delete_card',
             {},
             None
         )
@@ -899,6 +1168,20 @@ class CustomerTest(StripeResourceTest):
         self.requestor_mock.request.assert_called_with(
             'delete',
             '/v1/customers/cus_delete_source/sources/btcrcv_delete_source',
+            {},
+            None
+        )
+
+    def test_customer_delete_bank_account(self):
+        source = stripe.BankAccount.construct_from({
+            'customer': 'cus_delete_source',
+            'id': 'ba_delete_source',
+        }, 'api_key')
+        source.delete()
+
+        self.requestor_mock.request.assert_called_with(
+            'delete',
+            '/v1/customers/cus_delete_source/sources/ba_delete_source',
             {},
             None
         )
@@ -1008,16 +1291,16 @@ class RecipientTest(StripeResourceTest):
     def test_recipient_add_card(self):
         recipient = stripe.Recipient.construct_from({
             'id': 'rp_add_card',
-            'cards': {
+            'sources': {
                 'object': 'list',
-                'url': '/v1/recipients/rp_add_card/cards',
+                'url': '/v1/recipients/rp_add_card/sources',
             },
         }, 'api_key')
-        recipient.cards.create(card=DUMMY_CARD)
+        recipient.sources.create(card=DUMMY_CARD)
 
         self.requestor_mock.request.assert_called_with(
             'post',
-            '/v1/recipients/rp_add_card/cards',
+            '/v1/recipients/rp_add_card/sources',
             {
                 'card': DUMMY_CARD,
             },
@@ -1341,7 +1624,7 @@ class FileUploadTest(StripeResourceTest):
         stripe.FileUpload.create(
             purpose='dispute_evidence',
             file=test_file
-            )
+        )
         self.requestor_mock.request.assert_called_with(
             'post',
             '/v1/files',
@@ -1373,6 +1656,58 @@ class FileUploadTest(StripeResourceTest):
 class RefundTest(StripeResourceTest):
 
     def test_create_refund(self):
+        stripe.Refund.create(charge='ch_foo')
+
+        self.requestor_mock.request.assert_called_with(
+            'post',
+            '/v1/refunds',
+            {'charge': 'ch_foo'},
+            None
+        )
+
+    def test_fetch_refund(self):
+        stripe.Refund.retrieve('re_foo')
+
+        self.requestor_mock.request.assert_called_with(
+            'get',
+            '/v1/refunds/re_foo',
+            {},
+            None
+        )
+
+    def test_list_refunds(self):
+        stripe.Refund.all(limit=3, charge='ch_foo')
+
+        self.requestor_mock.request.assert_called_with(
+            'get',
+            '/v1/refunds',
+            {'limit': 3, 'charge': 'ch_foo'}
+        )
+
+    def test_update_refund(self):
+        refund = stripe.resource.Refund.construct_from({
+            'id': "ref_update",
+            'charge': "ch_update",
+            'metadata': {},
+        }, 'api_key')
+        refund.metadata["key"] = "value"
+        refund.save()
+
+        self.requestor_mock.request.assert_called_with(
+            'post',
+            '/v1/refunds/ref_update',
+            {
+                'metadata': {
+                    'key': 'value',
+                }
+            },
+            None
+        )
+
+
+class ChargeRefundTest(StripeResourceTest):
+
+    def test_create_refund(self):
         charge = stripe.Charge.construct_from({
             'id': 'ch_foo',
             'refunds': {
@@ -1389,6 +1724,29 @@ class RefundTest(StripeResourceTest):
             {},
             None
         )
+
+    def test_non_recursive_save(self):
+        charge = stripe.Charge.construct_from({
+            'id': 'ch_nested_update',
+            'customer': {
+                'object': 'customer',
+                'description': 'foo',
+            },
+            'refunds': {
+                'object': 'list',
+                'url': '/v1/charges/ch_foo/refunds',
+                'data': [{
+                    'id': 'ref_123',
+                }],
+            },
+        }, 'api_key')
+
+        charge.customer.description = 'bar'
+        charge.refunds.has_more = True
+        charge.refunds.data[0].description = 'bar'
+        charge.save()
+
+        self.requestor_mock.request.assert_not_called()
 
     def test_fetch_refund(self):
         charge = stripe.Charge.construct_from({
@@ -1437,7 +1795,7 @@ class RefundTest(StripeResourceTest):
 
         self.requestor_mock.request.assert_called_with(
             'post',
-            '/v1/charges/ch_update/refunds/ref_update',
+            '/v1/refunds/ref_update',
             {
                 'metadata': {
                     'key': 'value',
@@ -1586,14 +1944,16 @@ class BitcoinReceiverTest(StripeResourceTest):
 
     def test_create_receiver(self):
         stripe.BitcoinReceiver.create(amount=100, description="some details",
-                                      currency="usd")
+                                      currency="usd",
+                                      email="do+fill_now@stripe.com")
         self.requestor_mock.request.assert_called_with(
             'post',
             '/v1/bitcoin/receivers',
             {
                 'amount': 100,
                 'description': 'some details',
-                'currency': 'usd'
+                'currency': 'usd',
+                'email': 'do+fill_now@stripe.com'
             },
             None
         )
@@ -1667,6 +2027,50 @@ class BitcoinReceiverTest(StripeResourceTest):
         self.requestor_mock.request.assert_called_with(
             'get',
             '/v1/bitcoin/receivers/btcrcv_foo/transactions',
+            {},
+            None
+        )
+
+
+class ProductTest(StripeResourceTest):
+
+    def test_list_products(self):
+        stripe.Product.all()
+        self.requestor_mock.request.assert_called_with(
+            'get',
+            '/v1/products',
+            {}
+        )
+
+
+class SKUTest(StripeResourceTest):
+
+    def test_list_skus(self):
+        stripe.SKU.all()
+        self.requestor_mock.request.assert_called_with(
+            'get',
+            '/v1/skus',
+            {}
+        )
+
+
+class OrderTest(StripeResourceTest):
+
+    def test_list_orders(self):
+        stripe.Order.all()
+        self.requestor_mock.request.assert_called_with(
+            'get',
+            '/v1/orders',
+            {}
+        )
+
+    def test_pay_order(self):
+        order = stripe.Order(id="or_pay")
+        order.pay()
+
+        self.requestor_mock.request.assert_called_with(
+            'post',
+            '/v1/orders/or_pay/pay',
             {},
             None
         )

@@ -170,6 +170,7 @@ class StripeProcessPaymentHandler(webapp2.RequestHandler):
             
             outputDict = {}
             outputDict['paid'] = charge.paid
+            outputDict['chargeid'] = charge.id
             outputDict['refundURL'] = str( charge.refunds.url[1:-1] )
             
             outputJSON = json.dumps( outputDict )
@@ -178,12 +179,34 @@ class StripeProcessPaymentHandler(webapp2.RequestHandler):
             
             self.response.write( outputJSON )
         except stripe.CardError, e:
+            logging.info( e )
             self.response.write("The card has been declined")
             pass
 
-class LobSendEmailReceiptRequestHandler(webapp2.RequestHandler):
+class StripeIssueRefund(webapp2.RequestHandler):
     def post(self):
+        try:
+            refund = stripe.Refund.create(
+                charge=self.request.get('chargeid'),
+                reason="Unable to properly create the lob job to mail the PDF file."
+                # amount is not specified, the default is the full amount of the original charge.
+            )
+            
+            outputDict = {}
+            outputDict['refundid'] = refund.id
+            
+            outputJSON = json.dumps( outputDict )
+            
+            self.response.write( outputJSON )
+            
+        except stripe.CardError, e:
+            logging.info( e )
+            self.response.write( "There was a problem issuing the refund for some reason. %s", e.message )
+            pass
 
+
+class LobSendEmailReceiptRequestHandler(webapp2.RequestHandler):
+    def post(self):        
         jobid = self.request.get('jobid')
         srcEmail = self.request.get('srcEmail')
         deliveryDate = self.request.get('deliveryDate')
@@ -216,5 +239,6 @@ application = webapp2.WSGIApplication([
     ('/lob/getJobQuote', LobGetJobQuoteRequestHandler),
     ('/lob/createJob', LobCreateJobRequestHandler),
     ('/lob/sendLobEmailReceipt', LobSendEmailReceiptRequestHandler),
-    ('/stripe/processPayment', StripeProcessPaymentHandler)
+    ('/stripe/processPayment', StripeProcessPaymentHandler),
+    ('/stripe/issueRefund', StripeIssueRefund)
 ], debug=True)

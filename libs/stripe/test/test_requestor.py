@@ -1,5 +1,5 @@
 import datetime
-import unittest
+import unittest2
 import urlparse
 
 from mock import Mock
@@ -137,12 +137,13 @@ class APIRequestorRequestTests(StripeUnitTestCase):
         self.requestor = stripe.api_requestor.APIRequestor(
             client=self.http_client)
 
-    def mock_response(self, return_body, return_code, requestor=None):
+    def mock_response(self, return_body, return_code, requestor=None,
+                      headers=None):
         if not requestor:
             requestor = self.requestor
 
         self.http_client.request = Mock(
-            return_value=(return_body, return_code))
+            return_value=(return_body, return_code, headers or {}))
 
     def check_call(self, meth, abs_url=None, headers=None,
                    post_data=None, requestor=None):
@@ -198,6 +199,20 @@ class APIRequestorRequestTests(StripeUnitTestCase):
             expectation.extend([(k % (type_,), str(v)) for k, v in values])
 
         self.check_call('get', QueryMatcher(expectation))
+
+    def test_dictionary_list_encoding(self):
+        params = {
+            'foo': {
+                '0': {
+                    'bar': 'bat',
+                }
+            }
+        }
+        encoded = list(stripe.api_requestor._api_encode(params))
+        key, value = encoded[0]
+
+        self.assertEqual('foo[0][bar]', key)
+        self.assertEqual('bat', value)
 
     def test_url_construction(self):
         CASES = (
@@ -336,6 +351,13 @@ class APIRequestorRequestTests(StripeUnitTestCase):
                           self.requestor.request,
                           'get', self.valid_path, {})
 
+    def test_rate_limit_error(self):
+        self.mock_response('{"error": {}}', 429)
+
+        self.assertRaises(stripe.error.RateLimitError,
+                          self.requestor.request,
+                          'get', self.valid_path, {})
+
     def test_server_error(self):
         self.mock_response('{"error": {}}', 500)
 
@@ -356,4 +378,4 @@ class APIRequestorRequestTests(StripeUnitTestCase):
                           'foo', 'bar')
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest2.main()
