@@ -2,17 +2,6 @@ v1
 
 TODO:
 
-make sure indicating that the src / dest addresses are incorrect is working for both cases.
-add support for when both dest/src addresses are both incorrect
-
-make the form well shake when indicating one of the addresses is incorrect/invalid (like the stripe modal does)
-
-think about printing options that lob supports ie b&w, front&back or just front, etc.
-
-change address handling to get the address from the fields ONCE, then retrieve the addresses from Lob maybe?
-
-dont shift around the UI when showing / hiding the notification banner.
-
 remove history for all files which have ever included api keys:
     mailmypdf.py
     lob.py
@@ -27,6 +16,14 @@ actually rank in google for some of the search results
     post to hacker news & reddit
 
 v2
+
+dont shift around the UI when showing / hiding the notification banner.
+
+make the form well shake when indicating one of the addresses is incorrect/invalid (like the stripe modal does)
+
+change address handling to get the address from the fields ONCE, then retrieve the addresses from Lob maybe?
+
+think about printing options that lob supports ie b&w, front&back or just front, etc.
 
 send the lob reciept email to the pdf sender.
  - this cant be done. we need to use the lobapi to get the estimated delivery date
