@@ -34,6 +34,7 @@ $(window).on('popstate', function()
 });
 
 var globalDropzone;
+var globalJobQuote = -1;
 
 var dropzoneOptions = {
   
@@ -125,7 +126,7 @@ function cancelStripe()
     $("#card-expiry-year").val('');
 }
 
-function submitMailingJobToLob( refundURL, chargeID )
+function submitMailingJobToLob( chargeID )
 {
     // Make an xhr request to the python server to create the job through the Lob API
     
@@ -133,21 +134,21 @@ function submitMailingJobToLob( refundURL, chargeID )
     jobCreateData.append('name', 'Uploaded PDF');
     jobCreateData.append('object_id', document.getElementById("objectid").className);    
     
-    jobCreateData.append('to_addressName', document.getElementsByName("srcName")[0].value);
-    jobCreateData.append('to_addressAddr1', document.getElementsByName("srcAddress1")[0].value);
-    jobCreateData.append('to_addressAddr2', document.getElementsByName("srcAddress2")[0].value);
-    jobCreateData.append('to_addressCity', document.getElementsByName("srcCity")[0].value);
-    jobCreateData.append('to_addressState', document.getElementsByName("srcState")[0].value);
-    jobCreateData.append('to_addressZip', document.getElementsByName("srcZip")[0].value);
-    jobCreateData.append('to_addressCountry', document.getElementsByName("srcCountry")[0].value);
+    jobCreateData.append('to_addressName',      document.getElementsByName("destName")[0].value.trim() );
+    jobCreateData.append('to_addressAddr1',     document.getElementsByName("destAddress1")[0].value.trim() );
+    jobCreateData.append('to_addressAddr2',     document.getElementsByName("destAddress2")[0].value.trim() );
+    jobCreateData.append('to_addressCity',      document.getElementsByName("destCity")[0].value.trim() );
+    jobCreateData.append('to_addressState',     document.getElementsByName("destState")[0].value.trim() );
+    jobCreateData.append('to_addressZip',       document.getElementsByName("destZip")[0].value.trim() );
+    jobCreateData.append('to_addressCountry',   document.getElementsByName("destCountry")[0].value.trim() );
     
-    jobCreateData.append('from_addressName', document.getElementsByName("destName")[0].value);
-    jobCreateData.append('from_addressAddr1', document.getElementsByName("destAddress1")[0].value);
-    jobCreateData.append('from_addressAddr2', document.getElementsByName("destAddress2")[0].value);
-    jobCreateData.append('from_addressCity', document.getElementsByName("destCity")[0].value);
-    jobCreateData.append('from_addressState', document.getElementsByName("destState")[0].value);
-    jobCreateData.append('from_addressZip', document.getElementsByName("destZip")[0].value);
-    jobCreateData.append('from_addressCountry', document.getElementsByName("destCountry")[0].value);    
+    jobCreateData.append('from_addressName',    document.getElementsByName("srcName")[0].value.trim() );
+    jobCreateData.append('from_addressAddr1',   document.getElementsByName("srcAddress1")[0].value.trim() );
+    jobCreateData.append('from_addressAddr2',   document.getElementsByName("srcAddress2")[0].value.trim() );
+    jobCreateData.append('from_addressCity',    document.getElementsByName("srcCity")[0].value.trim() );
+    jobCreateData.append('from_addressState',   document.getElementsByName("srcState")[0].value.trim() );
+    jobCreateData.append('from_addressZip',     document.getElementsByName("srcZip")[0].value.trim() );
+    jobCreateData.append('from_addressCountry', document.getElementsByName("srcCountry")[0].value.trim() );    
     
     var jobCreateXhr = new XMLHttpRequest();
     jobCreateXhr.onload = jobCreateReqListener;
@@ -173,13 +174,12 @@ function submitMailingJobToLob( refundURL, chargeID )
             
             globalDropzone.removeAllFiles();
             
-            sendEmailReceipt( obj.jobid, obj.deliveryDate );
+            //sendEmailReceipt( obj.jobid, obj.deliveryDate );
         }
         else
         {
             alertError( "Unable to create Lob job for some reason. A refund will be automatically issued." );
             
-            console.log("refundURL: %s", refundURL);
             console.log("chargeID: %s", chargeID);
             
             // If the Lob job creation or processing fails, then we need to initiate a stripe refund.
@@ -240,9 +240,13 @@ $(function()
     {
         var dropzoneFileCount = globalDropzone.getAcceptedFiles().length;
         
-        if ( dropzoneFileCount > 0 )
+        if ( $('#objectid').attr('class') && $('#downloadURL').attr('class') )
         {
-            clearTextFieldBorders();      
+            processPayment();
+        }
+        else if ( dropzoneFileCount > 0 )
+        {
+            clearTextFieldBorders();
             validateAddresses();
         }
         else
@@ -314,46 +318,55 @@ $(function()
     
     function processPayment()
     {
-        getJobQuote();
+        if ( globalJobQuote == -1 )
+            getJobQuote();
+        else if ( globalJobQuote > -1 )
+            activateStripeModal();
+        else
+            alertError("Weird jobquote case that probably shouldn't happen. Tell somebody. (jobquote is non zero and less than or equal to -1)");
     }
     
     function getJobQuote()
     {
         // Make job quote request to python backend and get the price for a job using the test api key
-        var jobQuote = -1;
+        
+        alertInfo( "Determining mailing cost..." );
         
         var jobQuoteRequestData = new FormData();
         jobQuoteRequestData.append('objectid', document.getElementById("objectid").className);
         jobQuoteRequestData.append('downloadURL', document.getElementById("downloadURL").className);
         
-        jobQuoteRequestData.append('to_addressName', document.getElementsByName("srcName")[0].value);
-        jobQuoteRequestData.append('to_addressAddr1', document.getElementsByName("srcAddress1")[0].value);
-        jobQuoteRequestData.append('to_addressAddr2', document.getElementsByName("srcAddress2")[0].value);
-        jobQuoteRequestData.append('to_addressCity', document.getElementsByName("srcCity")[0].value);
-        jobQuoteRequestData.append('to_addressState', document.getElementsByName("srcState")[0].value);
-        jobQuoteRequestData.append('to_addressZip', document.getElementsByName("srcZip")[0].value);
-        jobQuoteRequestData.append('to_addressCountry', document.getElementsByName("srcCountry")[0].value);
+        jobQuoteRequestData.append('to_addressName', document.getElementsByName("srcName")[0].value.trim() );
+        jobQuoteRequestData.append('to_addressAddr1', document.getElementsByName("srcAddress1")[0].value.trim() );
+        jobQuoteRequestData.append('to_addressAddr2', document.getElementsByName("srcAddress2")[0].value.trim() );
+        jobQuoteRequestData.append('to_addressCity', document.getElementsByName("srcCity")[0].value.trim() );
+        jobQuoteRequestData.append('to_addressState', document.getElementsByName("srcState")[0].value.trim() );
+        jobQuoteRequestData.append('to_addressZip', document.getElementsByName("srcZip")[0].value.trim() );
+        jobQuoteRequestData.append('to_addressCountry', document.getElementsByName("srcCountry")[0].value.trim() );
         
-        jobQuoteRequestData.append('from_addressName', document.getElementsByName("destName")[0].value);
-        jobQuoteRequestData.append('from_addressAddr1', document.getElementsByName("destAddress1")[0].value);
-        jobQuoteRequestData.append('from_addressAddr2', document.getElementsByName("destAddress2")[0].value);
-        jobQuoteRequestData.append('from_addressCity', document.getElementsByName("destCity")[0].value);
-        jobQuoteRequestData.append('from_addressState', document.getElementsByName("destState")[0].value);
-        jobQuoteRequestData.append('from_addressZip', document.getElementsByName("destZip")[0].value);
-        jobQuoteRequestData.append('from_addressCountry', document.getElementsByName("destCountry")[0].value);
+        jobQuoteRequestData.append('from_addressName', document.getElementsByName("destName")[0].value.trim() );
+        jobQuoteRequestData.append('from_addressAddr1', document.getElementsByName("destAddress1")[0].value.trim() );
+        jobQuoteRequestData.append('from_addressAddr2', document.getElementsByName("destAddress2")[0].value.trim() );
+        jobQuoteRequestData.append('from_addressCity', document.getElementsByName("destCity")[0].value.trim() );
+        jobQuoteRequestData.append('from_addressState', document.getElementsByName("destState")[0].value.trim() );
+        jobQuoteRequestData.append('from_addressZip', document.getElementsByName("destZip")[0].value.trim() );
+        jobQuoteRequestData.append('from_addressCountry', document.getElementsByName("destCountry")[0].value.trim() );
+        
+        // console.log("objectid %s: ", document.getElementById("objectid").className);
+        // console.log("downloadURL %s: ", document.getElementById("downloadURL").className);
         
         function jobQuoteReqListener()
         {
             // console.log("jobQuoteResponseUnparsed: " + jobQuote);
             // console.log("jobQuoteResponse: " + parseFloat(jobQuote));
             
-            var jobPrice = parseFloat( this.responseText );
+            globalJobQuote = parseFloat( this.responseText );
             
             // console.log("jobPrice: %s", jobPrice);
             
-            if ( jobPrice > -1 )
+            if ( globalJobQuote > -1 )
             {
-                activateStripeModal( jobPrice );
+                activateStripeModal();
             }
             else
             {
@@ -367,12 +380,12 @@ $(function()
         jobQuoteXhr.send( jobQuoteRequestData );
     }
     
-    function activateStripeModal( jobPrice )
+    function activateStripeModal()
     {
         $(".alert").hide();
         
         // Convert the jobPrice from dollars into cents, then add 5 cents so we actually make money.
-        jobPrice = (jobPrice * 100) + 5;
+        var jobPrice = (globalJobQuote * 100) + 5;
         
         var handler = StripeCheckout.configure(
         {
@@ -397,13 +410,12 @@ $(function()
                     obj = JSON.parse( this.responseText );
                     
                     // console.log("paid: %s", obj.paid);
-                    // console.log("refundURL: %s", obj.refundURL);
                     
                     if ( obj.paid == true ) {
                         
                         // console.log("stripe charge paid = true");
                         
-                        submitMailingJobToLob( obj.refundURL, obj.chargeid );
+                        submitMailingJobToLob( obj.chargeid );
                     }
                     else
                         alertError( "Unable to successfully process the Stripe payment. Try again later." );
@@ -444,6 +456,9 @@ $(function()
         
         $('input[name=srcAddress2]').css("border-style", "solid");
         $('input[name=srcAddress2]').css("border-color", "red");
+        
+        $('input[name=srcEmail]').css("border-style", "solid");
+        $('input[name=srcEmail]').css("border-color", "red");
         
         $('input[name=srcCity]').css("border-style", "solid");
         $('input[name=srcCity]').css("border-color", "red");
@@ -498,13 +513,13 @@ $(function()
         }
         
         var srcAddressData = new FormData();
-        srcAddressData.append('Name', document.getElementsByName("srcName")[0].value);
-        srcAddressData.append('Address1', document.getElementsByName("srcAddress1")[0].value);
-        srcAddressData.append('Address2', document.getElementsByName("srcAddress2")[0].value);
-        srcAddressData.append('City', document.getElementsByName("srcCity")[0].value);
-        srcAddressData.append('State', document.getElementsByName("srcState")[0].value);
-        srcAddressData.append('Zip', document.getElementsByName("srcZip")[0].value);
-        srcAddressData.append('Country', document.getElementsByName("srcCountry")[0].value);
+        srcAddressData.append('Name', document.getElementsByName("srcName")[0].value.trim() );
+        srcAddressData.append('Address1', document.getElementsByName("srcAddress1")[0].value.trim() );
+        srcAddressData.append('Address2', document.getElementsByName("srcAddress2")[0].value.trim() );
+        srcAddressData.append('City', document.getElementsByName("srcCity")[0].value.trim() );
+        srcAddressData.append('State', document.getElementsByName("srcState")[0].value.trim() );
+        srcAddressData.append('Zip', document.getElementsByName("srcZip")[0].value.trim() );
+        srcAddressData.append('Country', document.getElementsByName("srcCountry")[0].value.trim() );
         
         var srcXhr = new XMLHttpRequest();
         srcXhr.onload = srcReqListener;
@@ -522,18 +537,18 @@ $(function()
                 return;
             }
             
-            alertInfo( "<strong>Submitting PDF file...</strong>" );
+            alertInfo( "<strong>Uploading PDF file...</strong>" );
             $( "#dropzone" ).submit();
         }
         
         var destAddressData = new FormData();
-        destAddressData.append('Name', document.getElementsByName("destName")[0].value);
-        destAddressData.append('Address1', document.getElementsByName("destAddress1")[0].value);
-        destAddressData.append('Address2', document.getElementsByName("destAddress2")[0].value);
-        destAddressData.append('City', document.getElementsByName("destCity")[0].value);
-        destAddressData.append('State', document.getElementsByName("destState")[0].value);
-        destAddressData.append('Zip', document.getElementsByName("destZip")[0].value);
-        destAddressData.append('Country', document.getElementsByName("destCountry")[0].value);
+        destAddressData.append('Name', document.getElementsByName("destName")[0].value.trim() );
+        destAddressData.append('Address1', document.getElementsByName("destAddress1")[0].value.trim() );
+        destAddressData.append('Address2', document.getElementsByName("destAddress2")[0].value.trim() );
+        destAddressData.append('City', document.getElementsByName("destCity")[0].value.trim() );
+        destAddressData.append('State', document.getElementsByName("destState")[0].value.trim() );
+        destAddressData.append('Zip', document.getElementsByName("destZip")[0].value.trim() );
+        destAddressData.append('Country', document.getElementsByName("destCountry")[0].value.trim() );
         
         var destXhr = new XMLHttpRequest();
         destXhr.onload = destReqListener;
@@ -552,11 +567,12 @@ $(function()
         document.getElementsByName("srcState")[0].value     = "CA";
         document.getElementsByName("srcZip")[0].value       = "94521";
         
-        document.getElementsByName("destName")[0].value     = "aaron hesse";
-        document.getElementsByName("destAddress1")[0].value = "4004 houston court";
-        document.getElementsByName("destCity")[0].value     = "Concord";
+        document.getElementsByName("destName")[0].value     = "marc hesse";
+        document.getElementsByName("destAddress1")[0].value = "555 w middlefield rd";
+        document.getElementsByName("destAddress2")[0].value = "Apt f202";
+        document.getElementsByName("destCity")[0].value     = "Mountain View";
         document.getElementsByName("destState")[0].value    = "CA";
-        document.getElementsByName("destZip")[0].value      = "94521";
+        document.getElementsByName("destZip")[0].value      = "94043";
         */
     });
 });

@@ -171,7 +171,6 @@ class StripeProcessPaymentHandler(webapp2.RequestHandler):
             outputDict = {}
             outputDict['paid'] = charge.paid
             outputDict['chargeid'] = charge.id
-            outputDict['refundURL'] = str( charge.refunds.url[1:-1] )
             
             outputJSON = json.dumps( outputDict )
             
