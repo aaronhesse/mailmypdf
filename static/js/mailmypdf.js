@@ -5,7 +5,7 @@ function alertError( messageString )
     $(".alert").addClass("alert-error");
     $("#alert-message").empty();
     $("#alert-message").html( "<strong>Error!</strong> " + messageString );
-    $(".alert").show();
+    showAlert();
 }
 
 function alertInfo( messageString )
@@ -15,7 +15,7 @@ function alertInfo( messageString )
     $(".alert").addClass("alert-info");
     $("#alert-message").empty();
     $("#alert-message").html( messageString );
-    $(".alert").show();
+    showAlert();
 }
 
 function alertSuccess( messageString )
@@ -25,7 +25,7 @@ function alertSuccess( messageString )
     $(".alert").addClass("alert-success");
     $("#alert-message").empty();
     $("#alert-message").html( "<strong>Success!</strong> " + messageString );
-    $(".alert").show();
+    showAlert();
 }
 
 $(window).on('popstate', function()
@@ -60,7 +60,7 @@ var dropzoneOptions = {
     {
         if ($(".alert").hasClass("alert-info"))
         {
-            $(".alert").hide();
+            hideAlert();
         }
         
         $(".dropzone").css("border-style", "none");
@@ -200,6 +200,16 @@ function submitMailingJobToLob( chargeID )
     }
 }
 
+function showAlert()
+{
+    $(".alert").css("visibility", "visible");
+}
+
+function hideAlert()
+{
+    $(".alert").css("visibility", "hidden");
+}
+
 function sendEmailReceipt( jobid, deliveryDate )
 {
     // Make an xhr request to the backend to log in to mailmypdf@scourcritical.com
@@ -273,6 +283,9 @@ $(function()
         $('input[name=srcAddress2]').css("border-style", "");
         $('input[name=srcAddress2]').css("border-color", "");
         
+        $('input[name=srcEmail]').css("border-style", "");
+        $('input[name=srcEmail]').css("border-color", "");
+        
         $('input[name=srcCity]').css("border-style", "");
         $('input[name=srcCity]').css("border-color", "");
         
@@ -313,7 +326,7 @@ $(function()
     
     $('.close').click(function()
     {
-        $(".alert").hide();
+       hideAlert();
     });
     
     function processPayment()
@@ -382,7 +395,7 @@ $(function()
     
     function activateStripeModal()
     {
-        $(".alert").hide();
+        hideAlert();
         
         // Convert the jobPrice from dollars into cents, then add 5 cents so we actually make money.
         var jobPrice = (globalJobQuote * 100) + 5;
