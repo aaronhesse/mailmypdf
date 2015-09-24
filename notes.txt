@@ -2,12 +2,7 @@ v1
 
 TODO:
 
-remove history for all files which have ever included api keys:
-    mailmypdf.py
-    lob.py
-    
-maybe write a python script to add the keys from a GAE, but git ignored file (apikeys.txt), to app.yaml,
-then call appcfg.py update ., then remove the keys from app.yaml, this way app.yaml stays in git control?
+
 
 prevent the site from making more than $10 worth of requests per day? (during testing/beta)
 make sure we're never charging too little (or less than what lob is charging).?
@@ -15,7 +10,18 @@ make sure we're never charging too little (or less than what lob is charging).?
 actually rank in google for some of the search results
     post to hacker news & reddit
 
+
+
+
+
 v2
+
+remove history for all files which have ever included api keys:
+    mailmypdf.py
+    lob.py
+    
+maybe write a python script to add the keys from a GAE, but git ignored file (apikeys.txt), to app.yaml,
+then call appcfg.py update ., then remove the keys from app.yaml, this way app.yaml stays in git control?
 
 dont shift around the UI when showing / hiding the notification banner.
 

@@ -323,7 +323,7 @@ $(function()
         else if ( globalJobQuote > -1 )
             activateStripeModal();
         else
-            alertError("Weird jobquote case that probably shouldn't happen. Tell somebody. (jobquote is non zero and less than or equal to -1)");
+            alertError("Weird jobquote case that probably shouldn't happen. Tell somebody.");
     }
     
     function getJobQuote()
