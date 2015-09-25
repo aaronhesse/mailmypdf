@@ -132,7 +132,7 @@ function submitMailingJobToLob( chargeID )
     
     var jobCreateData = new FormData();
     jobCreateData.append('name', 'Uploaded PDF');
-    jobCreateData.append('object_id', document.getElementById("objectid").className);    
+    jobCreateData.append('object_id',           document.getElementById("objectid").className);    
     
     jobCreateData.append('to_addressName',      document.getElementsByName("destName")[0].value.trim() );
     jobCreateData.append('to_addressAddr1',     document.getElementsByName("destAddress1")[0].value.trim() );
@@ -148,7 +148,7 @@ function submitMailingJobToLob( chargeID )
     jobCreateData.append('from_addressCity',    document.getElementsByName("srcCity")[0].value.trim() );
     jobCreateData.append('from_addressState',   document.getElementsByName("srcState")[0].value.trim() );
     jobCreateData.append('from_addressZip',     document.getElementsByName("srcZip")[0].value.trim() );
-    jobCreateData.append('from_addressCountry', document.getElementsByName("srcCountry")[0].value.trim() );    
+    jobCreateData.append('from_addressCountry', document.getElementsByName("srcCountry")[0].value.trim() );
     
     var jobCreateXhr = new XMLHttpRequest();
     jobCreateXhr.onload = jobCreateReqListener;
@@ -161,9 +161,9 @@ function submitMailingJobToLob( chargeID )
         
         obj = JSON.parse( this.responseText );
         
-        console.log( "obj.jobid: %s", obj.jobid );
-        console.log( "obj.validJob: %s", obj.validJob );
-        console.log( "obj.deliveryDate: %s", obj.deliveryDate );
+        //console.log( "obj.jobid: %s", obj.jobid );
+        //console.log( "obj.validJob: %s", obj.validJob );
+        //console.log( "obj.deliveryDate: %s", obj.deliveryDate );
         
         if ( obj.validJob == true )
         {
@@ -180,7 +180,7 @@ function submitMailingJobToLob( chargeID )
         {
             alertError( "Unable to create Lob job for some reason. A refund will be automatically issued." );
             
-            console.log("chargeID: %s", chargeID);
+            //console.log("chargeID: %s", chargeID);
             
             // If the Lob job creation or processing fails, then we need to initiate a stripe refund.
             
@@ -189,7 +189,7 @@ function submitMailingJobToLob( chargeID )
             
             function stripeRefundReqListener()
             {
-                console.log( "stripeRefundReqListener (ResponseText): %s", this.responseText );
+                //console.log( "stripeRefundReqListener (ResponseText): %s", this.responseText );
             }
             
             var stripeRefundXhr = new XMLHttpRequest();
@@ -223,7 +223,7 @@ function sendEmailReceipt( jobid, deliveryDate )
     
     function lobEmailReceiptReqListener()
     {
-        console.log( "lobEmailReceiptReqListener (ResponseText): %s", this.responseText );
+        //console.log( "lobEmailReceiptReqListener (ResponseText): %s", this.responseText );
     }
     
     var lobEmailReceiptXhr = new XMLHttpRequest();
@@ -260,7 +260,7 @@ $(function()
             validateAddresses();
         }
         else
-            alertError("Please attach a file first by dropping a file onto the page.");
+            alertError( "Please attach a file first by dropping a file onto the page." );
         
         e.preventDefault();
     });
@@ -336,7 +336,7 @@ $(function()
         else if ( globalJobQuote > -1 )
             activateStripeModal();
         else
-            alertError("Weird jobquote case that probably shouldn't happen. Tell somebody.");
+            alertError( "Unable to properly process payment." );
     }
     
     function getJobQuote()
@@ -346,23 +346,24 @@ $(function()
         alertInfo( "Determining mailing cost..." );
         
         var jobQuoteRequestData = new FormData();
-        jobQuoteRequestData.append('objectid', document.getElementById("objectid").className);
-        jobQuoteRequestData.append('downloadURL', document.getElementById("downloadURL").className);
         
-        jobQuoteRequestData.append('to_addressName', document.getElementsByName("srcName")[0].value.trim() );
-        jobQuoteRequestData.append('to_addressAddr1', document.getElementsByName("srcAddress1")[0].value.trim() );
-        jobQuoteRequestData.append('to_addressAddr2', document.getElementsByName("srcAddress2")[0].value.trim() );
-        jobQuoteRequestData.append('to_addressCity', document.getElementsByName("srcCity")[0].value.trim() );
-        jobQuoteRequestData.append('to_addressState', document.getElementsByName("srcState")[0].value.trim() );
-        jobQuoteRequestData.append('to_addressZip', document.getElementsByName("srcZip")[0].value.trim() );
-        jobQuoteRequestData.append('to_addressCountry', document.getElementsByName("srcCountry")[0].value.trim() );
+        jobQuoteRequestData.append('objectid',            document.getElementById("objectid").className);
+        jobQuoteRequestData.append('downloadURL',         document.getElementById("downloadURL").className);
         
-        jobQuoteRequestData.append('from_addressName', document.getElementsByName("destName")[0].value.trim() );
-        jobQuoteRequestData.append('from_addressAddr1', document.getElementsByName("destAddress1")[0].value.trim() );
-        jobQuoteRequestData.append('from_addressAddr2', document.getElementsByName("destAddress2")[0].value.trim() );
-        jobQuoteRequestData.append('from_addressCity', document.getElementsByName("destCity")[0].value.trim() );
-        jobQuoteRequestData.append('from_addressState', document.getElementsByName("destState")[0].value.trim() );
-        jobQuoteRequestData.append('from_addressZip', document.getElementsByName("destZip")[0].value.trim() );
+        jobQuoteRequestData.append('to_addressName',      document.getElementsByName("srcName")[0].value.trim() );
+        jobQuoteRequestData.append('to_addressAddr1',     document.getElementsByName("srcAddress1")[0].value.trim() );
+        jobQuoteRequestData.append('to_addressAddr2',     document.getElementsByName("srcAddress2")[0].value.trim() );
+        jobQuoteRequestData.append('to_addressCity',      document.getElementsByName("srcCity")[0].value.trim() );
+        jobQuoteRequestData.append('to_addressState',     document.getElementsByName("srcState")[0].value.trim() );
+        jobQuoteRequestData.append('to_addressZip',       document.getElementsByName("srcZip")[0].value.trim() );
+        jobQuoteRequestData.append('to_addressCountry',   document.getElementsByName("srcCountry")[0].value.trim() );
+        
+        jobQuoteRequestData.append('from_addressName',    document.getElementsByName("destName")[0].value.trim() );
+        jobQuoteRequestData.append('from_addressAddr1',   document.getElementsByName("destAddress1")[0].value.trim() );
+        jobQuoteRequestData.append('from_addressAddr2',   document.getElementsByName("destAddress2")[0].value.trim() );
+        jobQuoteRequestData.append('from_addressCity',    document.getElementsByName("destCity")[0].value.trim() );
+        jobQuoteRequestData.append('from_addressState',   document.getElementsByName("destState")[0].value.trim() );
+        jobQuoteRequestData.append('from_addressZip',     document.getElementsByName("destZip")[0].value.trim() );
         jobQuoteRequestData.append('from_addressCountry', document.getElementsByName("destCountry")[0].value.trim() );
         
         // console.log("objectid %s: ", document.getElementById("objectid").className);
@@ -383,7 +384,7 @@ $(function()
             }
             else
             {
-                alertError("Unable to retrieve price for mailing job. Try again later.");
+                alertError( "Unable to determine the mailing cost. Try again later." );
             }
         }
         
@@ -397,8 +398,21 @@ $(function()
     {
         hideAlert();
         
-        // Convert the jobPrice from dollars into cents, then add 5 cents so we actually make money.
-        var jobPrice = (globalJobQuote * 100) + 5;
+        // Convert the globalJobQuote from dollars into cents, make sure to factor in what Stripe charges for usage.
+        // then factor in the profit we want to make. Add that all together, then round up to the nearest whole number
+        // and we have our total mailing cost that we should be charging the user.
+        
+        var jobPrice = (globalJobQuote * 100);
+        var stripeCost = (jobPrice * 0.029) + 30;
+        var profit = 5;
+        var totalMailingCost = jobPrice + stripeCost + profit;
+        var actualTotalMailingCost = Math.ceil(totalMailingCost);
+        
+        //console.log("jobPrice: %s", jobPrice);
+        //console.log("stripeCost: %s", stripeCost);
+        //console.log("profit: %s", profit);
+        //console.log("totalMailingCost: %s", totalMailingCost);
+        //console.log("actualTotalMailingCost: %s", actualTotalMailingCost);
         
         var handler = StripeCheckout.configure(
         {
@@ -407,10 +421,10 @@ $(function()
             image: 'static/adobe.png',
             name: 'MailMyPDF',
             description: 'Physically mailing a PDF file',
-            amount: jobPrice,
+            amount: actualTotalMailingCost,
             token: function(token)
             {
-                // The checkout payment form has been submitted.
+                // At this point the checkout payment form has been submitted.
                 
                 function paymentReqListener()
                 {
@@ -418,27 +432,25 @@ $(function()
                     // If the checkout payment completed successfully, then create the lob job.
                     // Otherwise alert the user that we weren't able to process the Stripe payment.
                     
-                    // console.log("this.responseText: %s", this.responseText);
+                    //console.log("this.responseText: %s", this.responseText);
                     
                     obj = JSON.parse( this.responseText );
                     
-                    // console.log("paid: %s", obj.paid);
+                    //console.log("paid: %s", obj.paid);
                     
-                    if ( obj.paid == true ) {
-                        
-                        // console.log("stripe charge paid = true");
-                        
+                    if ( obj.paid == true )
+                    {
                         submitMailingJobToLob( obj.chargeid );
                     }
                     else
                         alertError( "Unable to successfully process the Stripe payment. Try again later." );
                 }
                 
-                // console.log("tokenid: %s", token.id );
+                //console.log("tokenid: %s", token.id );
                 
                 var paymentData = new FormData();
                 paymentData.append('tokenid', token.id);
-                paymentData.append('amount', jobPrice);
+                paymentData.append('amount', actualTotalMailingCost);
                 paymentData.append('description', "Physically Mailing a PDF.");
                 
                 var paymentXhr = new XMLHttpRequest();
@@ -459,7 +471,7 @@ $(function()
     
     function setSourceAddressError()
     {
-        alertError( "Originating address is not valid." );
+        alertError( "The originating address doesn't look like a real address." );
         
         $('input[name=srcName]').css("border-style", "solid");
         $('input[name=srcName]').css("border-color", "red");
@@ -488,7 +500,7 @@ $(function()
     
     function setDestinationAddressError()
     {
-        alertError( "Destination address is not valid." );
+        alertError( "The destination address doesn't look like a real address." );
         
         $('input[name=destName]').css("border-style", "solid");
         $('input[name=destName]').css("border-color", "red");
@@ -526,13 +538,13 @@ $(function()
         }
         
         var srcAddressData = new FormData();
-        srcAddressData.append('Name', document.getElementsByName("srcName")[0].value.trim() );
+        srcAddressData.append('Name',     document.getElementsByName("srcName")[0].value.trim() );
         srcAddressData.append('Address1', document.getElementsByName("srcAddress1")[0].value.trim() );
         srcAddressData.append('Address2', document.getElementsByName("srcAddress2")[0].value.trim() );
-        srcAddressData.append('City', document.getElementsByName("srcCity")[0].value.trim() );
-        srcAddressData.append('State', document.getElementsByName("srcState")[0].value.trim() );
-        srcAddressData.append('Zip', document.getElementsByName("srcZip")[0].value.trim() );
-        srcAddressData.append('Country', document.getElementsByName("srcCountry")[0].value.trim() );
+        srcAddressData.append('City',     document.getElementsByName("srcCity")[0].value.trim() );
+        srcAddressData.append('State',    document.getElementsByName("srcState")[0].value.trim() );
+        srcAddressData.append('Zip',      document.getElementsByName("srcZip")[0].value.trim() );
+        srcAddressData.append('Country',  document.getElementsByName("srcCountry")[0].value.trim() );
         
         var srcXhr = new XMLHttpRequest();
         srcXhr.onload = srcReqListener;
@@ -555,13 +567,13 @@ $(function()
         }
         
         var destAddressData = new FormData();
-        destAddressData.append('Name', document.getElementsByName("destName")[0].value.trim() );
+        destAddressData.append('Name',     document.getElementsByName("destName")[0].value.trim() );
         destAddressData.append('Address1', document.getElementsByName("destAddress1")[0].value.trim() );
         destAddressData.append('Address2', document.getElementsByName("destAddress2")[0].value.trim() );
-        destAddressData.append('City', document.getElementsByName("destCity")[0].value.trim() );
-        destAddressData.append('State', document.getElementsByName("destState")[0].value.trim() );
-        destAddressData.append('Zip', document.getElementsByName("destZip")[0].value.trim() );
-        destAddressData.append('Country', document.getElementsByName("destCountry")[0].value.trim() );
+        destAddressData.append('City',     document.getElementsByName("destCity")[0].value.trim() );
+        destAddressData.append('State',    document.getElementsByName("destState")[0].value.trim() );
+        destAddressData.append('Zip',      document.getElementsByName("destZip")[0].value.trim() );
+        destAddressData.append('Country',  document.getElementsByName("destCountry")[0].value.trim() );
         
         var destXhr = new XMLHttpRequest();
         destXhr.onload = destReqListener;
