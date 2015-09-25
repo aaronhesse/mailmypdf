@@ -5,10 +5,9 @@ TODO:
 verify internet explorer compatibility
 also consider the rest of the browsers
 
-it looks like the entire document body being the dropzone isn't working any longer for some reason
-fix this.
-
 fix bootstrap spacing issue
+
+install google analytics for the page/site.
 
 make sure html/css/js are all valid
 make sure they are all cross browser compliant as much as possible.

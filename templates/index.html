@@ -26,6 +26,7 @@
         
         <link href="static/css/bootstrap-combined.min.css" rel="stylesheet">
         <link href="static/css/bootstrap-formhelpers.css"  rel="stylesheet">
+        <link href="static/css/mailmypdf.css"  rel="stylesheet">
         
         <link rel="shortcut icon" href="static/myicon.ico" />
         
@@ -119,12 +120,12 @@
         
         <div style="font-size:11px; text-align: center"><a href="mailto:aaron@scourcritical.com">feedback</a></div>
         
-        <script>
-            dropzoneOptions.url = "{{ uploadURL }}";
-            dropzoneOptions.clickable = "#MailMyPDFButtonClickable";
-            globalDropzone = new Dropzone(document.body, dropzoneOptions);
-        </script>
-        
+            <script>
+                dropzoneOptions.url = "{{ uploadURL }}";
+                dropzoneOptions.clickable = "#MailMyPDFButtonClickable";
+                globalDropzone = new Dropzone(document.documentElement, dropzoneOptions);
+            </script>
+                                                
     </body>
     
 </html>
