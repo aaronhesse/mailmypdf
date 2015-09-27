@@ -53,7 +53,7 @@ var dropzoneOptions = {
         globalDropzone.removeAllFiles();
         
         $('#MailMyPDFButtonClickable').css("display", "none");
-        $('#MailMyPDFButton').css("display", "");
+        $('#MailMyPDFButton').css("display", "inline");
     });
     
     this.on("addedfile", function(file)
@@ -167,7 +167,7 @@ function submitMailingJobToLob( chargeID )
         
         if ( obj.validJob == true )
         {
-            alertSuccess( "Your PDF will be mailed shortly. <br/> The expected delivery date is: <strong>" + obj.deliveryDate + "</strong>" );
+            alertSuccess( "Your PDF will be mailed shortly. The expected delivery date is: <strong>" + obj.deliveryDate + "</strong>" );
             
             $("#downloadURL").removeClass();
             $("#objectid").removeClass();

@@ -6,6 +6,7 @@ verify internet explorer compatibility
 also consider the rest of the browsers
 
 fix bootstrap spacing issue
+use bootstrap form control error states instead of the custom ones.
 
 install google analytics for the page/site.
 
