@@ -32,6 +32,9 @@ use angular-bw-email-autofill for email address autofill population on main page
 
 use geo-ip for auto filling the src and dest state dropdown.
 
+think about upgrading the bootstrap version?
+think about upgrading the lob api version?
+
 remove history for all files which have ever included api keys:??
     mailmypdf.py
     lob.py
@@ -40,7 +43,8 @@ maybe write a python script to add the keys from a GAE, but git ignored file (ap
 then call appcfg.py update ., then remove the keys from app.yaml, this way app.yaml stays in git control?
 
 maybe make the form well shake when indicating one of the addresses is incorrect/invalid (like the stripe modal does)
- at least just try it out to see if it looks good or better
+ at least just try it out to see if it looks good or better (looks like its angular.js)
+ https://www.reddit.com/r/angularjs/comments/2dheog/shake_that_login_form_with_angularjs/
 
 change address handling to get the address from the fields ONCE, store the addresses in lob and then retrieve them?
  or maybe theres some better way to not have to do the same thing multiple times?
@@ -56,4 +60,6 @@ add ability to do bulk mailing
     - then make all the correct lob api calls to mail each one.
 
 have a way for people to easily convert documents to PDF (maybe not necessary for most people)
+    start with converting word documents.
+
 think about a mobile-centric version of the site, one that's easy to use from an iphone.
